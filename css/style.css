@@ -1,0 +1,222 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    background: #434e5a;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-container {
+    text-align: center;
+    color: white;
+    z-index: 10;
+    transition: opacity 0.8s ease-out;
+}
+
+.loading-container.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.shaker {
+    width: 60px;
+    height: 100px;
+    margin: 0 auto 20px;
+    position: relative;
+    transform-origin: center center;
+}
+
+.shaker-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 25px rgba(0,0,0,0.6)) brightness(1.2) contrast(1.1);
+}
+
+.shaking .shaker-image {
+    animation: shake 0.3s infinite;
+}
+
+.shaking {
+    animation: shake 0.3s infinite;
+}
+
+.shaking .motion-lines {
+    animation: motionLines 0.3s infinite;
+}
+
+@keyframes shake {
+    0%, 100% { transform: rotate(0deg) translateX(0px); }
+    25% { transform: rotate(-5deg) translateX(-2px); }
+    75% { transform: rotate(5deg) translateX(2px); }
+}
+
+@keyframes motionLines {
+    0%, 100% { opacity: 0.7; transform: translateX(0px); }
+    50% { opacity: 1; transform: translateX(2px); }
+}
+
+.loading-text {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 20px;
+    color: white;
+    opacity: 0;
+    animation: fadeInText 0.5s ease-in forwards;
+}
+
+@keyframes fadeInText {
+    to { opacity: 1; }
+}
+
+.split-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.split-half {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background: #0a0a0a;
+    transition: transform 1s ease-in-out;
+}
+
+.split-top {
+    top: 0;
+    transform-origin: bottom center;
+}
+
+.split-bottom {
+    bottom: 0;
+    transform-origin: top center;
+}
+
+.split-top.open {
+    transform: translateY(-100%);
+}
+
+.split-bottom.open {
+    transform: translateY(100%);
+}
+
+.content-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    opacity: 0;
+    transform: scale(0.3) rotateY(90deg);
+    animation: mindBendingEntry 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) 3s forwards;
+}
+
+.main-title {
+    font-size: 4rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 1rem;
+    letter-spacing: 0.1rem;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    animation: shimmer 3s ease-in-out infinite alternate;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    letter-spacing: 0.2rem;
+    margin-top: 1rem;
+    opacity: 0;
+    animation: slideUpFade 1s ease-out 4.5s forwards;
+}
+
+@keyframes mindBendingEntry {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) rotateY(90deg) translateZ(-200px);
+        filter: blur(20px);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1) rotateY(0deg) translateZ(0px);
+        filter: blur(5px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotateY(0deg) translateZ(0px);
+        filter: blur(0px);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 0% 50%;
+        transform: translateY(0px);
+    }
+    100% {
+        background-position: 100% 50%;
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+.sparkles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.sparkle.animate {
+    animation: sparkleAnimation 1s ease-out forwards;
+}
+
+@keyframes sparkleAnimation {
+    0% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0); }
+}

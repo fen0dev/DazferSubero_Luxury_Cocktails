@@ -3,9 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dazfer Subero • Luxury Cocktails</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Luxury Cocktails by Dazfer Subero</title>
 </head>
 <body>
-    
+    <div class="split-container">
+        <div class="split-half split-top"></div>
+        <div class="split-half split-bottom"></div>
+    </div>
+
+    <div class="loading-container">
+        <div class="shaker" id="shaker">
+            <img src="assets/shaker.png" alt="Cocktail Shaker" class="shaker-image">
+        </div>
+        <div class="loading-text">Getting your cocktail ready...</div>
+    </div>
+
+    <div class="sparkles" id="sparkles"></div>
+
+    <div class="content-page">
+        <h1 class="main-title">Mixology</h1>
+        <p class="subtitle">Crafted Perfection</p>
+    </div>
+
+    <script>
+        // Shaking animation
+        const shaker = document.getElementById('shaker');
+        const splitTop = document.querySelector('.split-top');
+        const splitBottom = document.querySelector('.split-bottom');
+        const sparklesContainer = document.getElementById('sparkles');
+
+        // start shaking immediately
+        shaker.classList.add('shaking');
+
+        // create slight sparkles effect
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.top = Math.random() * 100 + '%';
+            sparkle.style.animationDelay = Math.random() * 0.5 + 's';
+            sparklesContainer.appendChild(sparkle);
+
+            setTimeout(() => {
+                sparkle.classList.add('animate');
+            }, 100);
+
+            setTimeout(() => {
+                sparkle.remove();
+            }, 1500);
+        }
+
+        // create sparkles during shaking (reduced for elegance)
+        const sparkleInterval = setInterval(createSparkle, 400);
+
+        // after 2.5s stop shaking and trigger split
+        setTimeout(() => {
+            shaker.classList.remove('shaking');
+            clearInterval(sparkleInterval);
+
+            // add minimal sparkles for the opening effect
+            for(let i = 0; i < 6; i++) {
+                setTimeout(createSparkle, i * 100);
+            }
+
+            // trigger split
+            setTimeout(() => {
+                splitTop.classList.add('open');
+                splitBottom.classList.add('open');
+            }, 500);
+
+            document.querySelector('.loading-container').classList.add('hide');
+        }, 2500);
+    </script>
 </body>
 </html>
