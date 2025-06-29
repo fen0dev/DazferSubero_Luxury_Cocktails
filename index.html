@@ -65,19 +65,25 @@
         setTimeout(() => {
             shaker.classList.remove('shaking');
             clearInterval(sparkleInterval);
-
+            document.querySelector('.loading-container').classList.add('hide');
+            
             // add minimal sparkles for the opening effect
             for(let i = 0; i < 6; i++) {
                 setTimeout(createSparkle, i * 100);
             }
-
+            
             // trigger split
             setTimeout(() => {
                 splitTop.classList.add('open');
                 splitBottom.classList.add('open');
+                
+                // Wait for split animation to complete (1.2s) then show content
+                setTimeout(() => {
+                    document.querySelector('.content-page').style.animationDelay = '0s';
+                    document.querySelector('.content-page').style.animation = 'mindBendingEntry 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+                }, 900); // Wait for split transition to complete
+                
             }, 500);
-
-            document.querySelector('.loading-container').classList.add('hide');
         }, 2500);
     </script>
 </body>
