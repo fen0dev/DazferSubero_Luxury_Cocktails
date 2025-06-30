@@ -5,7 +5,7 @@
 }
 
 body {
-    font-family: 'Lato', sans-serif;
+    font-family: 'Exo+2', sans-serif;
     background: #000000;
     min-height: 100vh;
     perspective: 1000px;
@@ -163,11 +163,12 @@ body.scrollable {
     position: absolute;
     top: -5%;
     left: -5%;
+    opacity: 0.7;
 }
 
 .hero-content {
     position: absolute;
-    top: 50%;
+    top: 73%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
@@ -185,13 +186,33 @@ body.scrollable {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    position: relative;
+    transform: translateZ(50px);
+}
+
+.hero-title::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6347 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: blur(10px);
+    opacity: 0.5;
+    transform: translateZ(-50px);
 }
 
 .hero-subtitle {
-    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(1rem, 2.5vw, 2rem);
     font-weight: 300;
     opacity: 0.8;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #c6c6c6;
+    transform: translateZ(30px);
 }
 
 /* Scroll Sections */
