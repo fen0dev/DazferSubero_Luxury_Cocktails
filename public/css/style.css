@@ -40,6 +40,27 @@ body.scrollable {
     z-index: 1;
     pointer-events: none;
     overflow: hidden;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+/* Show after hero */
+body.scrollable .liquid-morph-container {
+    opacity: 1;
+}
+
+/* SVG Gooey Filter */
+.liquid-morph-container::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.liquid-morph-container svg {
+    position: absolute;
+    width: 0;
+    height: 0;
 }
 
 /* Main Liquid Blob - Neumorphic */
@@ -48,13 +69,11 @@ body.scrollable {
     width: 400px;
     height: 400px;
     top: 50%;
-    left: 20%;
-    transform: translate(-50%, -50%);
-    animation: breathe 4s ease-in-out infinite;
-    filter: blur(2px);
-    transition: opacity 2s ease, transform 2s ease;
+    left: 0;
+    transform: translateX(0vw) translateY(-50%);
+    filter: url(#gooey);
     z-index: 101;
-    will-change: transform, opacity;
+    will-change: transform;
     backface-visibility: hidden;
 }
 
@@ -62,30 +81,30 @@ body.scrollable {
     width: 100%;
     height: 100%;
     background: var(--primary);
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    animation: morph 8s ease-in-out infinite;
-    transform-style: preserve-3d;
+    border-radius: 50%;
     position: relative;
+    will-change: transform;
     box-shadow: 
         30px 30px 80px rgba(0, 0, 0, 0.7),
         -30px -30px 80px rgba(255, 255, 255, 0.1),
         inset 15px 15px 30px rgba(0, 0, 0, 0.5),
         inset -15px -15px 30px rgba(255, 255, 255, 0.05);
-        z-index: 100;
+    z-index: 100;
 }
 
 /* Generated Blobs - Neumorphic */
 .generated-blob {
     position: absolute;
-    width: 350px;
-    height: 350px;
+    width: 400px;
+    height: 400px;
     opacity: 0;
     pointer-events: none;
-    filter: blur(1px);
-    will-change: transform, left, top, opacity;
+    filter: url(#gooey);
+    transition: left 0.1s linear, opacity 0.3s ease;
+    will-change: left, transform, filter, opacity;
     z-index: 102;
-    transform: translate3d(0, 0, 0); /* Force GPU acceleration */
-    backface-visibility: hidden; /* Prevent flickering */
+    transform: translate(-50%, -50%);
+    backface-visibility: hidden;
 }
 
 .generated-blob-inner {
@@ -195,6 +214,11 @@ body.scrollable {
         inset 15px 15px 35px rgba(0, 0, 0, 0.5),
         inset -15px -15px 35px rgba(255, 255, 255, 0.05);
     animation-delay: 2s;
+}
+
+@keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
 }
 
 @keyframes morph {

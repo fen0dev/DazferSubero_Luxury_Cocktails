@@ -11,6 +11,17 @@
 </head>
 <body>
     <div class="liquid-morph-container" id="liquidMorphContainer">
+        <!-- SVG Filter for Gooey Effect -->
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <defs>
+                <filter id="gooey">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="gooey" />
+                    <feComposite in="SourceGraphic" in2="gooey" operator="atop"/>
+                </filter>
+            </defs>
+        </svg>
+        
         <div class="liquid-blob" id="mainBlob">
             <div class="liquid-blob-inner"></div>
         </div>
@@ -112,7 +123,6 @@
                             </div>
                         </div>
                         <div class="cocktail-content">
-                            <div class="cocktail-number">01</div>
                             <h4>The Golden Hour</h4>
                             <p>Japanese whisky meets yuzu honey in a dance of light and time, finished with 24k gold leaf</p>
                             <div class="cocktail-ingredients">
@@ -131,7 +141,6 @@
                             </div>
                         </div>
                         <div class="cocktail-content">
-                            <div class="cocktail-number">02</div>
                             <h4>Smoke & Mirrors</h4>
                             <p>Mezcal's smokiness enhanced with activated charcoal, creating visual drama with every sip</p>
                             <div class="cocktail-ingredients">
@@ -150,7 +159,6 @@
                             </div>
                         </div>
                         <div class="cocktail-content">
-                            <div class="cocktail-number">03</div>
                             <h4>Midnight in Copenhagen</h4>
                             <p>Nordic elegance captured in glass - aquavit's complexity elevated with champagne effervescence</p>
                             <div class="cocktail-ingredients">
@@ -305,6 +313,7 @@
                 // Simple smooth animation properties
                 this.currentProgress = 0;
                 this.targetProgress = 0;
+                this.lastProgress = 0;
                 this.animationFrame = null;
                 
                 // Track scroll direction
@@ -325,18 +334,20 @@
             }
             
             init() {
-                // Count total sections
-                this.totalSections = document.querySelectorAll('section').length;
+                // Count total sections (excluding hero)
+                this.totalSections = document.querySelectorAll('section:not(.hero)').length;
                 
-                // Create initial state
+                // Create initial state - super simple
                 this.mainBlob.style.opacity = '0.8';
+                this.mainBlob.style.left = '0';
+                this.mainBlob.style.top = '50%';
+                this.mainBlob.style.transform = 'translateX(0vw) translateY(-50%)';
                 this.currentBlob = this.mainBlob;
                 
-                // Ensure main blob starts as perfect circle
+                // Start with perfect circle
                 const mainInner = this.mainBlob.querySelector('.liquid-blob-inner');
                 if (mainInner) {
-                    mainInner.style.animation = 'none';
-                    mainInner.style.borderRadius = '50%';
+                    mainInner.style.transform = 'scale(1)';
                 }
                 
                 // Create birth blob element
@@ -413,14 +424,14 @@
                     const diff = this.targetProgress - this.currentProgress;
                     const absDiff = Math.abs(diff);
                     
-                    // Ultra aggressive smoothing for very fast scrolling
-                    let smoothingFactor = 0.18;
+                    // Ultra smooth following with even gentler transitions
+                    let smoothingFactor = 0.06; // Even smoother base
                     if (absDiff > 0.8) {
-                        smoothingFactor = 0.5; // Instant catch-up for huge jumps
+                        smoothingFactor = 0.2; // Still smooth for jumps
                     } else if (absDiff > 0.3) {
-                        smoothingFactor = 0.3; // Faster catch-up
-                    } else if (absDiff < 0.05) {
-                        smoothingFactor = 0.12; // Smooth settling
+                        smoothingFactor = 0.1; // Gentle medium speed
+                    } else if (absDiff < 0.01) {
+                        smoothingFactor = 0.03; // Ultra smooth settling
                     }
                     
                     // Apply frame correction for consistent speed
@@ -443,46 +454,18 @@
             handleScroll() {
                 this.scrollPosition = window.pageYOffset;
                 
-                const currentSection = Math.floor(this.scrollPosition / this.sectionHeight);
-                const sectionProgress = (this.scrollPosition % this.sectionHeight) / this.sectionHeight;
+                // Get actual content height excluding hero
+                const heroHeight = document.querySelector('.hero').offsetHeight;
+                const adjustedScrollPosition = Math.max(0, this.scrollPosition - heroHeight);
                 
-                // Detect large jumps (fast scrolling)
-                const scrollDelta = Math.abs(this.scrollPosition - this.lastScrollPosition);
-                const isLargeJump = scrollDelta > this.sectionHeight * 0.5;
+                // Calculate CONTINUOUS progress through ALL sections
+                const contentSections = document.querySelectorAll('section:not(.hero)');
+                const totalContentHeight = this.sectionHeight * contentSections.length;
+                const totalProgress = adjustedScrollPosition / totalContentHeight;
                 
-                // Only update if section changed
-                if (currentSection !== this.currentSection) {
-                    const isGoingDown = currentSection > this.currentSection;
-                    const sectionJump = Math.abs(currentSection - this.currentSection);
-                    
-                    // Handle large jumps differently
-                    if (sectionJump > 1 || isLargeJump) {
-                        // Instant jump to new position for very fast scrolls
-                        this.currentProgress = sectionProgress;
-                        this.targetProgress = sectionProgress;
-                        
-                        // Force immediate visual update
-                        this.animateLiquidSeparation(sectionProgress, currentSection);
-                    } else {
-                        // Smooth section transitions for normal scrolling
-                        if (isGoingDown) {
-                            // Entering from top
-                            this.currentProgress = 0;
-                            this.targetProgress = sectionProgress;
-                        } else {
-                            // Entering from bottom
-                            this.currentProgress = 1;
-                            this.targetProgress = sectionProgress;
-                        }
-                    }
-                    
-                    this.currentSection = currentSection;
-                    this.scrollDirection = isGoingDown ? 1 : -1;
-                } else {
-                    // Within same section - just update target
-                    this.targetProgress = sectionProgress;
-                }
-                
+                // Store both total and section progress
+                this.targetProgress = Math.max(0, Math.min(1, totalProgress));
+                this.currentSection = Math.floor(adjustedScrollPosition / this.sectionHeight);
                 this.lastScrollPosition = this.scrollPosition;
             }
             
@@ -506,283 +489,54 @@
             animateLiquidSeparation(progress, section) {
                 if (!this.currentBlob) return;
                 
-                // Clamp progress to valid range
-                progress = Math.max(0, Math.min(1, progress));
+                // Use total progress for continuous movement
+                const totalProgress = progress;
                 
-                // Determine position based on section
-                const isEvenSection = section % 2 === 0;
-                const startX = isEvenSection ? 20 : 80;
-                const endX = isEvenSection ? 80 : 20;
-                const direction = endX > startX ? 1 : -1;
+                // Create a continuous zigzag path through all sections
+                const totalSections = this.totalSections;
+                const progressPerSection = 1 / totalSections;
+                const currentSectionProgress = totalProgress / progressPerSection;
+                const currentFullSection = Math.floor(currentSectionProgress);
+                const currentPartialProgress = currentSectionProgress - currentFullSection;
                 
-                // Advanced easing functions
-                const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-                const easeOutElastic = (t) => {
-                    const c4 = (2 * Math.PI) / 3;
-                    return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
-                };
-                const easeOutBack = (t) => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2);
-                
-                // Get inner elements for morphing control
-                const currentInner = this.currentBlob.querySelector('.liquid-blob-inner, .generated-blob-inner');
-                const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
-                
-                if (progress < 0.05) {
-                    // Phase 1: Perfect static circle (0-5%)
-                    this.currentBlob.style.left = `${startX}%`;
-                    this.currentBlob.style.top = '50%';
-                    this.currentBlob.style.opacity = '0.8';
-                    this.currentBlob.style.transform = `translate3d(-50%, -50%, 0) scale(1)`;
-                    this.currentBlob.style.transition = 'none';
-                    
-                    // Ensure perfect circle with smooth edges
-                    if (currentInner) {
-                        currentInner.style.animation = 'none';
-                        currentInner.style.borderRadius = '50%';
-                        currentInner.style.transform = 'scale(1)';
-                        currentInner.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                    }
-                    
-                    // Hide other elements cleanly
-                    this.birthBlob.style.opacity = '0';
-                    this.birthBlob.style.transform = 'scale(0)';
-                    this.dropConnector.style.opacity = '0';
-                    
-                } else if (progress < 0.15) {
-                    // Phase 2: Anticipation - subtle preparation (5-15%)
-                    const phase = (progress - 0.05) / 0.1;
-                    const smoothPhase = easeInOutCubic(phase);
-                    
-                    this.currentBlob.style.left = `${startX}%`;
-                    this.currentBlob.style.top = '50%';
-                    this.currentBlob.style.opacity = '0.8';
-                    
-                    // Subtle anticipation squash
-                    const anticipationScale = 1 - smoothPhase * 0.05;
-                    const anticipationStretch = 1 + smoothPhase * 0.08;
-                    this.currentBlob.style.transform = `translate3d(-50%, -50%, 0) scale(${anticipationScale}, ${anticipationStretch})`;
-                    
-                    // Gradually introduce morphing
-                    if (currentInner && smoothPhase > 0.5) {
-                        const morphIntensity = (smoothPhase - 0.5) * 2;
-                        currentInner.style.animation = `morph 8s ease-in-out infinite`;
-                        currentInner.style.animationPlayState = 'running';
-                        currentInner.style.opacity = `${0.7 + 0.3 * morphIntensity}`;
-                        // Smooth border radius transition
-                        const borderRadiusValue = 50 - (morphIntensity * 10);
-                        currentInner.style.borderRadius = `${borderRadiusValue}%`;
-                    }
-                    
-                    this.birthBlob.style.opacity = '0';
-                    this.dropConnector.style.opacity = '0';
-                    
-                } else if (progress < 0.25) {
-                    // Phase 3: Launch preparation (15-25%)
-                    const phase = (progress - 0.15) / 0.1;
-                    const smoothPhase = easeInOutCubic(phase);
-                    
-                    // Directional stretch before movement
-                    const stretchX = 1 + smoothPhase * 0.15 * direction;
-                    const stretchY = 1 - smoothPhase * 0.1;
-                    const skew = smoothPhase * 5 * direction;
-                    
-                    this.currentBlob.style.left = `${startX}%`;
-                    this.currentBlob.style.top = '50%';
-                    this.currentBlob.style.opacity = `${0.8 - smoothPhase * 0.1}`;
-                    this.currentBlob.style.transform = `translate3d(-50%, -50%, 0) scale(${stretchX}, ${stretchY}) skewX(${skew}deg)`;
-                    
-                    // Full morphing now active
-                    if (currentInner) {
-                        currentInner.style.animation = 'morph 6s ease-in-out infinite';
-                        currentInner.style.borderRadius = '40% 60% 60% 40% / 60% 40% 60% 40%';
-                    }
-                    
-                    // Birth blob begins to appear
-                    if (smoothPhase > 0.7) {
-                        const birthPhase = (smoothPhase - 0.7) / 0.3;
-                        this.birthBlob.style.left = `${startX}%`;
-                        this.birthBlob.style.top = '50%';
-                        this.birthBlob.style.opacity = `${0.3 * birthPhase}`;
-                        this.birthBlob.style.transform = `scale(${0.3 * birthPhase})`;
-                        
-                        if (birthInner) {
-                            birthInner.style.animation = 'none';
-                            birthInner.style.borderRadius = '50%';
-                        }
-                    }
-                    
-                } else if (progress < 0.75) {
-                    // Phase 4: Main transit with separation (25-75%)
-                    const phase = (progress - 0.25) / 0.5;
-                    const smoothPhase = easeInOutCubic(phase);
-                    
-                    // Current blob fades and shrinks
-                    this.currentBlob.style.left = `${startX}%`;
-                    this.currentBlob.style.top = '50%';
-                    this.currentBlob.style.opacity = `${0.7 * (1 - smoothPhase)}`;
-                    this.currentBlob.style.transform = `translate3d(-50%, -50%, 0) scale(${1 - smoothPhase * 0.3})`;
-                    
-                    // Birth blob movement with organic acceleration
-                    const movePhase = easeInOutCubic(smoothPhase);
-                    const birthX = startX + (endX - startX) * movePhase;
-                    
-                    this.birthBlob.style.left = `${birthX}%`;
-                    this.birthBlob.style.top = '50%';
-                    this.birthBlob.style.opacity = `${0.3 + 0.5 * smoothPhase}`;
-                    this.birthBlob.style.transform = 'scale(1)';
-                    
-                    if (birthInner) {
-                        birthInner.style.animation = 'morph 5s ease-in-out infinite';
-                        const moveStretch = 1 + Math.abs(movePhase - 0.5) * 0.2;
-                        const moveSquash = 1 - Math.abs(movePhase - 0.5) * 0.1;
-                        birthInner.style.transform = `scale(${moveStretch * direction > 0 ? moveStretch : moveSquash}, ${direction > 0 ? moveSquash : moveStretch})`;
-                    }
-                    
-                    // Smooth connector animation
-                    if (phase > 0.15 && phase < 0.85) {
-                        const connectorPhase = (phase - 0.15) / 0.7;
-                        const connectorIntensity = Math.sin(connectorPhase * Math.PI);
-                        
-                        const connectorX = startX + (birthX - startX) * 0.5;
-                        this.dropConnector.style.left = `${connectorX}%`;
-                        this.dropConnector.style.top = '50%';
-                        this.dropConnector.style.opacity = `${connectorIntensity * 0.25}`;
-                        this.dropConnector.style.transition = 'all 0.3s ease-out';
-                        
-                        const dropInner = this.dropConnector.querySelector('.drop-connector-inner');
-                        if (dropInner) {
-                            const distance = Math.abs(birthX - startX);
-                            const stretchFactor = 1 + (distance / 50);
-                            dropInner.style.transform = `scaleX(${stretchFactor}) scaleY(${0.6}) rotate(${direction > 0 ? 90 : -90}deg)`;
-                        }
-                    } else {
-                        this.dropConnector.style.opacity = '0';
-                    }
-                    
-                } else if (progress < 0.9) {
-                    // Phase 5: Wall approach with deformation (75-90%)
-                    const phase = (progress - 0.75) / 0.15;
-                    const impactPhase = easeOutBack(phase);
-                    
-                    // Current blob completely faded
-                    this.currentBlob.style.opacity = '0';
-                    
-                    // Birth blob approaches wall with realistic deformation
-                    const approachX = startX + (endX - startX) * 0.5 + (endX - startX) * 0.5 * impactPhase;
-                    this.birthBlob.style.left = `${approachX}%`;
-                    this.birthBlob.style.top = '50%';
-                    this.birthBlob.style.opacity = '0.8';
-                    
-                    if (birthInner) {
-                        // Natural squash and stretch on approach
-                        const squashFactor = 1 - impactPhase * 0.25;
-                        const stretchFactor = 1 + impactPhase * 0.35;
-                        
-                        if (direction > 0) {
-                            birthInner.style.transform = `scale(${squashFactor}, ${stretchFactor})`;
-                        } else {
-                            birthInner.style.transform = `scale(${stretchFactor}, ${squashFactor})`;
-                        }
-                        
-                        // Speed up morphing as impact approaches
-                        birthInner.style.animationDuration = `${4 - impactPhase * 2}s`;
-                        
-                        // Deform border radius for impact effect
-                        const deformValue = 50 - impactPhase * 15;
-                        birthInner.style.borderRadius = `${deformValue}% ${50 + impactPhase * 10}% ${50 + impactPhase * 10}% ${deformValue}% / ${50 + impactPhase * 10}% ${deformValue}% ${deformValue}% ${50 + impactPhase * 10}%`;
-                    }
-                    
-                    this.dropConnector.style.opacity = '0';
-                    
-                } else if (progress < 0.98) {
-                    // Phase 6: Impact and bounce (90-98%)
-                    const phase = (progress - 0.9) / 0.08;
-                    const bouncePhase = easeOutElastic(phase);
-                    
-                    // Position at wall with elastic bounce
-                    const finalX = endX - (endX - startX) * 0.02 * (1 - bouncePhase);
-                    this.birthBlob.style.left = `${finalX}%`;
-                    this.birthBlob.style.top = '50%';
-                    this.birthBlob.style.opacity = '0.8';
-                    
-                    if (birthInner) {
-                        // Elastic recovery to circle
-                        const recoveryScale = 1 + (1 - bouncePhase) * 0.15;
-                        birthInner.style.transform = `scale(${recoveryScale})`;
-                        
-                        // Gradually return to circle
-                        const circleProgress = bouncePhase;
-                        const borderRadiusValue = 40 + circleProgress * 10;
-                        birthInner.style.borderRadius = `${borderRadiusValue}%`;
-                        
-                        // Slow down morphing
-                        birthInner.style.animationDuration = `${4 + circleProgress * 4}s`;
-                    }
-                    
+                // Calculate X position with continuous zigzag
+                let currentX;
+                if (currentFullSection % 2 === 0) {
+                    // Even sections: left to right (0 to 85)
+                    currentX = 0 + (85 * currentPartialProgress);
                 } else {
-                    // Phase 7: Final rest state - perfect circle (98-100%)
-                    this.birthBlob.style.left = `${endX}%`;
-                    this.birthBlob.style.top = '50%';
-                    this.birthBlob.style.opacity = '0.8';
-                    this.birthBlob.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    // Odd sections: right to left (85 to 0)
+                    currentX = 85 - (85 * currentPartialProgress);
+                }
+                
+                // Clamp to valid range
+                currentX = Math.max(0, Math.min(85, currentX));
+                
+                // Apply position
+                this.currentBlob.style.transform = `translateX(${currentX}vw) translateY(-50%)`;
+                
+                // Morphing based on movement
+                const inner = this.currentBlob.querySelector('.liquid-blob-inner');
+                if (inner) {
+                    const velocity = Math.abs(this.currentProgress - this.lastProgress);
+                    this.lastProgress = this.currentProgress;
                     
-                    if (birthInner) {
-                        // Complete transition to perfect circle
-                        birthInner.style.animation = 'none';
-                        birthInner.style.borderRadius = '50%';
-                        birthInner.style.transform = 'scale(1)';
-                        birthInner.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-                    }
-                    
-                    // Trigger swap when fully settled
-                    if (!this.isAnimating) {
-                        this.isAnimating = true;
-                        setTimeout(() => this.swapBlobs(), 100);
+                    if (velocity > 0.001) {
+                        const stretch = 1 + velocity * 10;
+                        inner.style.transform = `scaleX(${Math.min(stretch, 1.2)}) scaleY(${Math.max(1 - velocity * 5, 0.9)})`;
+                    } else {
+                        inner.style.transform = 'scale(1)';
                     }
                 }
+                
+                // Hide unused elements
+                if (this.birthBlob) this.birthBlob.style.display = 'none';
+                if (this.dropConnector) this.dropConnector.style.display = 'none';
             }
             
             swapBlobs() {
-                // Create new blob
-                const newBlob = document.createElement('div');
-                newBlob.className = `generated-blob blob-variant-${(this.currentSection % 4) + 1}`;
-                newBlob.innerHTML = '<div class="generated-blob-inner"></div>';
-                
-                // Position at birth blob location
-                newBlob.style.left = this.birthBlob.style.left;
-                newBlob.style.top = this.birthBlob.style.top;
-                newBlob.style.opacity = '0.8';
-                
-                // Ensure new blob starts as perfect circle
-                const newInner = newBlob.querySelector('.generated-blob-inner');
-                if (newInner) {
-                    newInner.style.animation = 'none';
-                    newInner.style.borderRadius = '50%';
-                }
-                
-                this.container.appendChild(newBlob);
-                
-                // Clean up old blob
-                if (this.currentBlob && this.currentBlob !== this.mainBlob) {
-                    const oldBlob = this.currentBlob;
-                    setTimeout(() => {
-                        if (oldBlob.parentNode) {
-                            this.container.removeChild(oldBlob);
-                        }
-                    }, 100);
-                }
-                
-                // Reset birth blob
-                this.birthBlob.style.opacity = '0';
-                const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
-                birthInner.style.transform = 'scale(0)';
-                
-                // Update reference
-                this.currentBlob = newBlob;
-                
-                setTimeout(() => {
-                    this.isAnimating = false;
-                }, 100);
+                // Not needed with single blob approach
+                this.isAnimating = false;
             }
         }
         
@@ -830,34 +584,54 @@
             }, 500);
         }, 2500);
 
-        // 3D Parallax on scroll
+        // 3D Parallax on scroll - Optimized
         function initScrollEffects() {
             const sections = document.querySelectorAll('section');
+            const heroContent = document.querySelector('.hero-content');
+            let ticking = false;
             
-            window.addEventListener('scroll', () => {
+            function updateScrollEffects() {
                 const scrollY = window.pageYOffset;
                 const windowHeight = window.innerHeight;
                 
+                // Disable 3D effects on hero section to prevent conflicts
                 sections.forEach((section, index) => {
+                    if (section.classList.contains('hero')) {
+                        // Skip hero section transforms
+                        section.style.transform = 'none';
+                        return;
+                    }
+                    
                     const sectionTop = section.offsetTop;
                     const sectionHeight = section.offsetHeight;
                     const sectionCenter = sectionTop + sectionHeight / 2;
                     const distanceFromCenter = scrollY + windowHeight / 2 - sectionCenter;
                     const normalizedDistance = distanceFromCenter / windowHeight;
                     
-                    // 3D rotation effect
-                    const rotateX = normalizedDistance * 15;
-                    const translateZ = Math.abs(normalizedDistance) * -100;
+                    // Gentler 3D rotation effect
+                    const rotateX = normalizedDistance * 8; // Reduced from 15
+                    const translateZ = Math.abs(normalizedDistance) * -50; // Reduced from -100
                     
                     section.style.transform = `perspective(1000px) rotateX(${rotateX}deg) translateZ(${translateZ}px)`;
                 });
                 
-                // Hero fade out
-                const heroContent = document.querySelector('.hero-content');
-                const heroOpacity = Math.max(0, 1 - scrollY / (windowHeight * 0.8));
-                heroContent.style.opacity = heroOpacity;
-                heroContent.style.transform = `translateY(${scrollY * 0.3}px)`;
-            });
+                // Hero fade out with better performance
+                if (heroContent) {
+                    const heroOpacity = Math.max(0, 1 - scrollY / (windowHeight * 0.8));
+                    heroContent.style.opacity = heroOpacity;
+                    heroContent.style.transform = `translateY(${scrollY * 0.3}px)`;
+                }
+                
+                ticking = false;
+            }
+            
+            // Throttled scroll handler
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateScrollEffects);
+                    ticking = true;
+                }
+            }, { passive: true });
         }
 
         // Intersection Observer for fade-in animations
@@ -885,8 +659,8 @@
                 });
             }, observerOptions);
             
-            // Observe elements
-            document.querySelectorAll('h2, .neu-card, .philosophy-item, .timeline-item, .cocktail-neu-card, .contact-info-card').forEach(el => {
+            // Observe elements with correct class names
+            document.querySelectorAll('.section-header, .philosophy-card, .cocktail-card, .timeline-item, .contact-info').forEach(el => {
                 observer.observe(el);
             });
         }
