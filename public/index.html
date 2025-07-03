@@ -218,7 +218,7 @@
                 };
                 
                 // Cache window width for transform calculations
-                this.windowWidth = this.windowWidth;
+                this.windowWidth = window.innerWidth;
                 
                 this.init();
             }
@@ -248,7 +248,26 @@
             }
             
             bindScrollHandler() {
-                window.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+                // Throttled scroll handler
+                let scrollTimeout;
+                let lastScrollTime = 0;
+                const throttleDelay = 16; // ~60fps
+                
+                const throttledScroll = () => {
+                    const now = Date.now();
+                    
+                    if (now - lastScrollTime >= throttleDelay) {
+                        lastScrollTime = now;
+                        this.handleScroll();
+                    } else {
+                        clearTimeout(scrollTimeout);
+                        scrollTimeout = setTimeout(() => {
+                            this.handleScroll();
+                        }, throttleDelay);
+                    }
+                };
+                
+                window.addEventListener('scroll', throttledScroll, { passive: true });
                 
                 // Start animation loop
                 this.startAnimationLoop();
@@ -256,15 +275,28 @@
                 // Handle resize
                 window.addEventListener('resize', () => {
                     this.sectionHeight = window.innerHeight;
-                    this.windowWidth = this.windowWidth;
+                    this.windowWidth = window.innerWidth;
                 });
             }
             
             startAnimationLoop() {
                 let lastTime = 0;
+                let skipFrames = 0;
+                
                 const animate = (timestamp) => {
                     const deltaTime = timestamp - lastTime;
                     lastTime = timestamp;
+                    
+                    // Skip frames if performance is poor
+                    if (deltaTime > 33) { // Less than 30fps
+                        skipFrames = 2;
+                    }
+                    
+                    if (skipFrames > 0) {
+                        skipFrames--;
+                        this.animationFrame = requestAnimationFrame(animate);
+                        return;
+                    }
                     
                     // Frame-rate independent animation
                     const frameCorrection = Math.min(deltaTime / 16.67, 2); // 60fps baseline
@@ -273,10 +305,12 @@
                     const diff = this.targetProgress - this.currentProgress;
                     const absDiff = Math.abs(diff);
                     
-                    // Aggressive smoothing for instant response
-                    let smoothingFactor = 0.18; // Increased base
-                    if (absDiff > 0.3) {
-                        smoothingFactor = 0.25; // Much faster catch-up
+                    // Ultra aggressive smoothing for very fast scrolling
+                    let smoothingFactor = 0.18;
+                    if (absDiff > 0.8) {
+                        smoothingFactor = 0.5; // Instant catch-up for huge jumps
+                    } else if (absDiff > 0.3) {
+                        smoothingFactor = 0.3; // Faster catch-up
                     } else if (absDiff < 0.05) {
                         smoothingFactor = 0.12; // Smooth settling
                     }
@@ -284,7 +318,7 @@
                     // Apply frame correction for consistent speed
                     this.currentProgress += diff * smoothingFactor * frameCorrection;
                     
-                    // Snap to target if very close (prevents endless tiny movements)
+                    // Snap to target if very close
                     if (absDiff < 0.001) {
                         this.currentProgress = this.targetProgress;
                     }
@@ -304,19 +338,34 @@
                 const currentSection = Math.floor(this.scrollPosition / this.sectionHeight);
                 const sectionProgress = (this.scrollPosition % this.sectionHeight) / this.sectionHeight;
                 
+                // Detect large jumps (fast scrolling)
+                const scrollDelta = Math.abs(this.scrollPosition - this.lastScrollPosition);
+                const isLargeJump = scrollDelta > this.sectionHeight * 0.5;
+                
                 // Only update if section changed
                 if (currentSection !== this.currentSection) {
                     const isGoingDown = currentSection > this.currentSection;
+                    const sectionJump = Math.abs(currentSection - this.currentSection);
                     
-                    // Smooth section transitions
-                    if (isGoingDown) {
-                        // Entering from top
-                        this.currentProgress = 0;
+                    // Handle large jumps differently
+                    if (sectionJump > 1 || isLargeJump) {
+                        // Instant jump to new position for very fast scrolls
+                        this.currentProgress = sectionProgress;
                         this.targetProgress = sectionProgress;
+                        
+                        // Force immediate visual update
+                        this.animateLiquidSeparation(sectionProgress, currentSection);
                     } else {
-                        // Entering from bottom
-                        this.currentProgress = 1;
-                        this.targetProgress = sectionProgress;
+                        // Smooth section transitions for normal scrolling
+                        if (isGoingDown) {
+                            // Entering from top
+                            this.currentProgress = 0;
+                            this.targetProgress = sectionProgress;
+                        } else {
+                            // Entering from bottom
+                            this.currentProgress = 1;
+                            this.targetProgress = sectionProgress;
+                        }
                     }
                     
                     this.currentSection = currentSection;
