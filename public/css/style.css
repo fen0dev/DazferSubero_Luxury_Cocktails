@@ -68,7 +68,7 @@ body.scrollable .liquid-morph-container {
     position: absolute;
     width: 400px;
     height: 400px;
-    top: 50%;
+    top: 30%;
     left: 0;
     transform: translateX(0vw) translateY(-50%);
     filter: url(#gooey);
@@ -462,6 +462,7 @@ h2 {
     opacity: 0;
     transform: translateY(30px);
     transition: all 0.8s ease;
+    color: var(--text-light); /* Ensure color is set */
 }
 
 h2.visible {
@@ -811,6 +812,14 @@ h2.visible {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.section-header h2.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
 }
 
 .header-line {
@@ -818,6 +827,14 @@ h2.visible {
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
     margin: 0 auto;
+    opacity: 0;
+    transform: scaleX(0);
+    transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+}
+
+.header-line.visible {
+    opacity: 1;
+    transform: scaleX(1);
 }
 
 /* Image Placeholders */
@@ -1209,6 +1226,175 @@ textarea.form-input {
 .form-button:active .button-accent {
     width: 300px;
     height: 300px;
+}
+
+/* Footer Section */
+.footer {
+    background: var(--primary);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 4rem 0 2rem;
+    margin-top: 6rem;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: var(--secondary);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        8px 8px 20px rgba(0, 0, 0, 0.4),
+        -8px -8px 20px rgba(255, 255, 255, 0.05);
+}
+
+.social-link svg {
+    width: 24px;
+    height: 24px;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+    z-index: 2;
+    position: relative;
+}
+
+.social-link::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--accent-gold);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.social-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        12px 12px 30px rgba(0, 0, 0, 0.6),
+        -12px -12px 30px rgba(255, 255, 255, 0.1);
+}
+
+.social-link:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+.social-link:hover svg {
+    color: var(--primary);
+    transform: scale(1.1);
+}
+
+.footer-divider {
+    height: 1px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(255, 255, 255, 0.1) 20%,
+        rgba(255, 255, 255, 0.1) 80%,
+        transparent
+    );
+    margin: 3rem 0;
+}
+
+.footer-bottom {
+    text-align: center;
+}
+
+.copyright {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+.credits {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.credits p {
+    color: var(--text-dim);
+    font-size: 0.875rem;
+}
+
+.technoforged-link {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.technoforged-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(212, 175, 55, 0.3),
+        transparent
+    );
+    transition: left 0.6s ease;
+}
+
+.technoforged-link:hover::before {
+    left: 100%;
+}
+
+.company-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-copper));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.company-tagline {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.technoforged-link:hover .company-name {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
 }
 
 /* Responsive Design for New Sections */

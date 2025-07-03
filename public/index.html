@@ -6,11 +6,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@200;300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <title>Dazfer Subero - Liquid Architect</title>
 </head>
 <body>
     <div class="liquid-morph-container" id="liquidMorphContainer">
+        <!-- SVG Filter for Gooey Effect -->
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <defs>
+                <filter id="gooey">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="gooey" />
+                    <feComposite in="SourceGraphic" in2="gooey" operator="atop"/>
+                </filter>
+            </defs>
+        </svg>
+        
         <div class="liquid-blob" id="mainBlob">
             <div class="liquid-blob-inner"></div>
         </div>
@@ -23,7 +34,7 @@
 
     <div class="loading-container">
         <div class="shaker" id="shaker">
-            <img src="./assets/shaker.png" alt="Cocktail Shaker" class="shaker-image">
+            <img src="assets/shaker.png" alt="Cocktail Shaker" class="shaker-image">
         </div>
         <div class="loading-text">Crafting perfection...</div>
     </div>
@@ -40,30 +51,57 @@
         <!-- Philosophy Section -->
         <section class="philosophy">
             <div class="section-content">
-                <h2>Philosophy</h2>
-                <div class="neu-card">
-                    <p style="text-align: center; font-size: 1.2rem; line-height: 1.8; color: var(--text-dim);">
-                        Every cocktail is a journey through taste, texture, and time. 
-                        My approach combines classical technique with modern innovation, 
-                        creating experiences that transcend the ordinary.
-                    </p>
+                <div class="section-header">
+                    <h2>Philosophy</h2>
+                    <div class="header-line"></div>
+                </div>
+                
+                <div class="philosophy-intro">
+                    <div class="intro-text">
+                        <p class="lead-text">
+                            Every cocktail is a journey through taste, texture, and time. 
+                            My approach combines classical technique with modern innovation, 
+                            creating experiences that transcend the ordinary.
+                        </p>
+                    </div>
+                    <div class="intro-image-placeholder">
+                        <!-- Image placeholder for later -->
+                        <div class="image-frame">
+                            <span class="placeholder-text">Philosophy Image</span>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="philosophy-grid">
-                    <div class="philosophy-item">
-                        <div class="philosophy-icon">🥃</div>
-                        <h3>Precision</h3>
-                        <p>Mathematical accuracy meets artistic expression</p>
+                    <div class="philosophy-card">
+                        <div class="card-inner">
+                            <div class="card-icon">
+                                <span>01</span>
+                            </div>
+                            <h3>Precision</h3>
+                            <p>Mathematical accuracy meets artistic expression</p>
+                            <div class="card-accent"></div>
+                        </div>
                     </div>
-                    <div class="philosophy-item">
-                        <div class="philosophy-icon">🍃</div>
-                        <h3>Ingredients</h3>
-                        <p>Sourced globally, prepared with respect</p>
+                    <div class="philosophy-card">
+                        <div class="card-inner">
+                            <div class="card-icon">
+                                <span>02</span>
+                            </div>
+                            <h3>Ingredients</h3>
+                            <p>Sourced globally, prepared with respect</p>
+                            <div class="card-accent"></div>
+                        </div>
                     </div>
-                    <div class="philosophy-item">
-                        <div class="philosophy-icon">⚗️</div>
-                        <h3>Innovation</h3>
-                        <p>Pushing boundaries while honoring tradition</p>
+                    <div class="philosophy-card">
+                        <div class="card-inner">
+                            <div class="card-icon">
+                                <span>03</span>
+                            </div>
+                            <h3>Innovation</h3>
+                            <p>Pushing boundaries while honoring tradition</p>
+                            <div class="card-accent"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -72,38 +110,63 @@
         <!-- Craft Section -->
         <section class="craft">
             <div class="section-content">
-                <h2>The Craft</h2>
+                <div class="section-header">
+                    <h2>The Craft</h2>
+                    <div class="header-line"></div>
+                </div>
+                
                 <div class="cocktail-showcase">
-                    <div class="cocktail-neu-card">
-                        <h4>The Golden Hour</h4>
-                        <p>Japanese whisky meets yuzu honey in a dance of light and time, finished with 24k gold leaf</p>
-                        <div class="cocktail-ingredients">
-                            <span class="ingredient-tag">Nikka Whisky</span>
-                            <span class="ingredient-tag">Yuzu</span>
-                            <span class="ingredient-tag">Honey</span>
-                            <span class="ingredient-tag">Gold Leaf</span>
+                    <div class="cocktail-card">
+                        <div class="cocktail-image-placeholder">
+                            <div class="image-frame">
+                                <span class="placeholder-text">Golden Hour</span>
+                            </div>
+                        </div>
+                        <div class="cocktail-content">
+                            <h4>The Golden Hour</h4>
+                            <p>Japanese whisky meets yuzu honey in a dance of light and time, finished with 24k gold leaf</p>
+                            <div class="cocktail-ingredients">
+                                <span class="ingredient-tag">Nikka Whisky</span>
+                                <span class="ingredient-tag">Yuzu</span>
+                                <span class="ingredient-tag">Honey</span>
+                                <span class="ingredient-tag">Gold Leaf</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="cocktail-neu-card">
-                        <h4>Smoke & Mirrors</h4>
-                        <p>Mezcal's smokiness enhanced with activated charcoal, creating visual drama with every sip</p>
-                        <div class="cocktail-ingredients">
-                            <span class="ingredient-tag">Mezcal</span>
-                            <span class="ingredient-tag">Charcoal</span>
-                            <span class="ingredient-tag">Lime</span>
-                            <span class="ingredient-tag">Black Salt</span>
+                    <div class="cocktail-card">
+                        <div class="cocktail-image-placeholder">
+                            <div class="image-frame">
+                                <span class="placeholder-text">Smoke & Mirrors</span>
+                            </div>
+                        </div>
+                        <div class="cocktail-content">
+                            <h4>Smoke & Mirrors</h4>
+                            <p>Mezcal's smokiness enhanced with activated charcoal, creating visual drama with every sip</p>
+                            <div class="cocktail-ingredients">
+                                <span class="ingredient-tag">Mezcal</span>
+                                <span class="ingredient-tag">Charcoal</span>
+                                <span class="ingredient-tag">Lime</span>
+                                <span class="ingredient-tag">Black Salt</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="cocktail-neu-card">
-                        <h4>Midnight in Copenhagen</h4>
-                        <p>Nordic elegance captured in glass - aquavit's complexity elevated with champagne effervescence</p>
-                        <div class="cocktail-ingredients">
-                            <span class="ingredient-tag">Aquavit</span>
-                            <span class="ingredient-tag">Elderflower</span>
-                            <span class="ingredient-tag">Blackberry</span>
-                            <span class="ingredient-tag">Champagne</span>
+                    <div class="cocktail-card">
+                        <div class="cocktail-image-placeholder">
+                            <div class="image-frame">
+                                <span class="placeholder-text">Midnight in CPH</span>
+                            </div>
+                        </div>
+                        <div class="cocktail-content">
+                            <h4>Midnight in Copenhagen</h4>
+                            <p>Nordic elegance captured in glass - aquavit's complexity elevated with champagne effervescence</p>
+                            <div class="cocktail-ingredients">
+                                <span class="ingredient-tag">Aquavit</span>
+                                <span class="ingredient-tag">Elderflower</span>
+                                <span class="ingredient-tag">Blackberry</span>
+                                <span class="ingredient-tag">Champagne</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,27 +176,47 @@
         <!-- Experience Section -->
         <section class="experience">
             <div class="section-content">
-                <h2>The Experience</h2>
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-marker">01</div>
-                        <div class="timeline-content">
-                            <h3>Consultation</h3>
-                            <p>Understanding your palate, preferences, and the story you want to tell</p>
+                <div class="section-header">
+                    <h2>The Experience</h2>
+                    <div class="header-line"></div>
+                </div>
+                
+                <div class="experience-showcase">
+                    <div class="experience-visual">
+                        <div class="image-frame large">
+                            <span class="placeholder-text">Experience Journey</span>
                         </div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker">02</div>
-                        <div class="timeline-content">
-                            <h3>Creation</h3>
-                            <p>Precision meets performance as your cocktail comes to life</p>
+                    
+                    <div class="experience-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <span>01</span>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>Consultation</h3>
+                                <p>Understanding your palate, preferences, and the story you want to tell</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker">03</div>
-                        <div class="timeline-content">
-                            <h3>Presentation</h3>
-                            <p>A sensory journey that begins before the first sip</p>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <span>02</span>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>Creation</h3>
+                                <p>Precision meets performance as your cocktail comes to life</p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <span>03</span>
+                            </div>
+                            <div class="timeline-content">
+                                <h3>Presentation</h3>
+                                <p>A sensory journey that begins before the first sip</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -143,496 +226,74 @@
         <!-- Contact Section -->
         <section class="contact">
             <div class="section-content">
-                <h2>Connect</h2>
-                <div class="contact-grid">
-                    <div class="contact-info-card">
+                <div class="section-header">
+                    <h2>Connect</h2>
+                    <div class="header-line"></div>
+                </div>
+                
+                <div class="contact-wrapper">
+                    <div class="contact-info">
                         <h3>Let's Create Together</h3>
-                        <div class="info-item">
-                            <div class="info-label">Email</div>
-                            <a href="mailto:hello@dazfersubero.com" class="info-value">hello@dazfersubero.com</a>
+                        <p class="contact-intro">Ready to elevate your event with extraordinary cocktail experiences? Let's discuss how we can craft something memorable together.</p>
+                        
+                        <div class="contact-details">
+                            <div class="detail-item">
+                                <div class="detail-icon">✉</div>
+                                <div class="detail-content">
+                                    <span class="detail-label">Email</span>
+                                    <a href="mailto:hello@dazfersubero.com" class="detail-value">hello@dazfersubero.com</a>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-icon">📍</div>
+                                <div class="detail-content">
+                                    <span class="detail-label">Location</span>
+                                    <span class="detail-value">Copenhagen, Denmark</span>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-icon">📅</div>
+                                <div class="detail-content">
+                                    <span class="detail-label">Availability</span>
+                                    <span class="detail-value">Booking for 2025</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Location</div>
-                            <div class="info-value">Copenhagen, Denmark</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Availability</div>
-                            <div class="info-value">Booking for 2025</div>
+                        
+                        <div class="contact-visual">
+                            <div class="image-frame">
+                                <span class="placeholder-text">Contact Visual</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="neu-card">
-                        <div class="contact-form">
-                            <div class="form-group">
-                                <input type="text" class="neu-input" placeholder="Name">
+                    <div class="contact-form-wrapper">
+                        <form class="contact-form">
+                            <div class="form-row">
+                                <input type="text" class="form-input" placeholder="Your Name" required>
                             </div>
-                            <div class="form-group">
-                                <input type="email" class="neu-input" placeholder="Email">
+                            <div class="form-row">
+                                <input type="email" class="form-input" placeholder="Email Address" required>
                             </div>
-                            <div class="form-group">
-                                <input type="text" class="neu-input" placeholder="Event Type">
+                            <div class="form-row">
+                                <input type="text" class="form-input" placeholder="Event Type" required>
                             </div>
-                            <div class="form-group">
-                                <textarea class="neu-input" rows="4" placeholder="Tell me about your vision"></textarea>
+                            <div class="form-row">
+                                <textarea class="form-input" rows="5" placeholder="Tell me about your vision..." required></textarea>
                             </div>
-                            <div style="text-align: center;">
-                                <button class="neu-button">Begin the Journey</button>
-                            </div>
-                        </div>
+                            <button type="submit" class="form-button">
+                                <span>Begin the Journey</span>
+                                <div class="button-accent"></div>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </section>
     </div>
 
-    <script>
-        class LiquidMorphController {
-            constructor() {
-                this.container = document.getElementById('liquidMorphContainer');
-                this.mainBlob = document.getElementById('mainBlob');
-                this.currentBlob = null;
-                this.birthBlob = null;
-                this.dropConnector = null;
-                this.scrollPosition = 0;
-                this.lastScrollPosition = 0;
-                this.sectionHeight = window.innerHeight;
-                this.totalSections = 0;
-                this.currentSide = 'left';
-                this.isAnimating = false;
-                this.currentSection = 0;
-                
-                // Simple smooth animation properties
-                this.currentProgress = 0;
-                this.targetProgress = 0;
-                this.animationFrame = null;
-                
-                // Track scroll direction
-                this.scrollDirection = 1; // 1 for down, -1 for up
-                this.isReversing = false;
-                
-                // Cache for performance
-                this.lastStyles = {
-                    currentBlob: { left: '', top: '', opacity: '', transform: '' },
-                    birthBlob: { left: '', top: '', opacity: '', transform: '' },
-                    dropConnector: { left: '', top: '', opacity: '', transform: '' }
-                };
-                
-                // Cache window width for transform calculations
-                this.windowWidth = window.innerWidth;
-                
-                this.init();
-            }
-            
-            init() {
-                // Count total sections
-                this.totalSections = document.querySelectorAll('section').length;
-                
-                // Create initial state
-                this.mainBlob.style.opacity = '0.8';
-                this.currentBlob = this.mainBlob;
-                
-                // Create birth blob element
-                this.birthBlob = document.createElement('div');
-                this.birthBlob.className = 'birth-blob';
-                this.birthBlob.innerHTML = '<div class="birth-blob-inner"></div>';
-                this.container.appendChild(this.birthBlob);
-                
-                // Create drop connector element
-                this.dropConnector = document.createElement('div');
-                this.dropConnector.className = 'drop-connector';
-                this.dropConnector.innerHTML = '<div class="drop-connector-inner"></div>';
-                this.container.appendChild(this.dropConnector);
-                
-                // Bind scroll handler after content is revealed
-                this.bindScrollHandler = this.bindScrollHandler.bind(this);
-            }
-            
-            bindScrollHandler() {
-                // Throttled scroll handler
-                let scrollTimeout;
-                let lastScrollTime = 0;
-                const throttleDelay = 16; // ~60fps
-                
-                const throttledScroll = () => {
-                    const now = Date.now();
-                    
-                    if (now - lastScrollTime >= throttleDelay) {
-                        lastScrollTime = now;
-                        this.handleScroll();
-                    } else {
-                        clearTimeout(scrollTimeout);
-                        scrollTimeout = setTimeout(() => {
-                            this.handleScroll();
-                        }, throttleDelay);
-                    }
-                };
-                
-                window.addEventListener('scroll', throttledScroll, { passive: true });
-                
-                // Start animation loop
-                this.startAnimationLoop();
-                
-                // Handle resize
-                window.addEventListener('resize', () => {
-                    this.sectionHeight = window.innerHeight;
-                    this.windowWidth = window.innerWidth;
-                });
-            }
-            
-            startAnimationLoop() {
-                let lastTime = 0;
-                let skipFrames = 0;
-                
-                const animate = (timestamp) => {
-                    const deltaTime = timestamp - lastTime;
-                    lastTime = timestamp;
-                    
-                    // Skip frames if performance is poor
-                    if (deltaTime > 33) { // Less than 30fps
-                        skipFrames = 2;
-                    }
-                    
-                    if (skipFrames > 0) {
-                        skipFrames--;
-                        this.animationFrame = requestAnimationFrame(animate);
-                        return;
-                    }
-                    
-                    // Frame-rate independent animation
-                    const frameCorrection = Math.min(deltaTime / 16.67, 2); // 60fps baseline
-                    
-                    // Enhanced smooth interpolation
-                    const diff = this.targetProgress - this.currentProgress;
-                    const absDiff = Math.abs(diff);
-                    
-                    // Ultra aggressive smoothing for very fast scrolling
-                    let smoothingFactor = 0.18;
-                    if (absDiff > 0.8) {
-                        smoothingFactor = 0.5; // Instant catch-up for huge jumps
-                    } else if (absDiff > 0.3) {
-                        smoothingFactor = 0.3; // Faster catch-up
-                    } else if (absDiff < 0.05) {
-                        smoothingFactor = 0.12; // Smooth settling
-                    }
-                    
-                    // Apply frame correction for consistent speed
-                    this.currentProgress += diff * smoothingFactor * frameCorrection;
-                    
-                    // Snap to target if very close
-                    if (absDiff < 0.001) {
-                        this.currentProgress = this.targetProgress;
-                    }
-                    
-                    // Always animate to ensure smooth transitions
-                    this.animateLiquidSeparation(this.currentProgress, this.currentSection);
-                    
-                    this.animationFrame = requestAnimationFrame(animate);
-                };
-                
-                this.animationFrame = requestAnimationFrame(animate);
-            }
-            
-            handleScroll() {
-                this.scrollPosition = window.pageYOffset;
-                
-                const currentSection = Math.floor(this.scrollPosition / this.sectionHeight);
-                const sectionProgress = (this.scrollPosition % this.sectionHeight) / this.sectionHeight;
-                
-                // Detect large jumps (fast scrolling)
-                const scrollDelta = Math.abs(this.scrollPosition - this.lastScrollPosition);
-                const isLargeJump = scrollDelta > this.sectionHeight * 0.5;
-                
-                // Only update if section changed
-                if (currentSection !== this.currentSection) {
-                    const isGoingDown = currentSection > this.currentSection;
-                    const sectionJump = Math.abs(currentSection - this.currentSection);
-                    
-                    // Handle large jumps differently
-                    if (sectionJump > 1 || isLargeJump) {
-                        // Instant jump to new position for very fast scrolls
-                        this.currentProgress = sectionProgress;
-                        this.targetProgress = sectionProgress;
-                        
-                        // Force immediate visual update
-                        this.animateLiquidSeparation(sectionProgress, currentSection);
-                    } else {
-                        // Smooth section transitions for normal scrolling
-                        if (isGoingDown) {
-                            // Entering from top
-                            this.currentProgress = 0;
-                            this.targetProgress = sectionProgress;
-                        } else {
-                            // Entering from bottom
-                            this.currentProgress = 1;
-                            this.targetProgress = sectionProgress;
-                        }
-                    }
-                    
-                    this.currentSection = currentSection;
-                    this.scrollDirection = isGoingDown ? 1 : -1;
-                } else {
-                    // Within same section - just update target
-                    this.targetProgress = sectionProgress;
-                }
-                
-                this.lastScrollPosition = this.scrollPosition;
-            }
-            
-            setStyle(element, styleName, styles) {
-                // Only update if changed (reduces reflows)
-                const cache = this.lastStyles[styleName];
-                let hasChanges = false;
-                
-                for (const [key, value] of Object.entries(styles)) {
-                    if (cache[key] !== value) {
-                        cache[key] = value;
-                        hasChanges = true;
-                    }
-                }
-                
-                if (hasChanges) {
-                    Object.assign(element.style, styles);
-                }
-            }
-            
-            animateLiquidSeparation(progress, section) {
-                if (!this.currentBlob) return;
-                
-                // Clamp progress to valid range
-                progress = Math.max(0, Math.min(1, progress));
-                
-                // Determine position based on section
-                const isEvenSection = section % 2 === 0;
-                const startX = isEvenSection ? 20 : 80;
-                const endX = isEvenSection ? 80 : 20;
-                
-                // Simple easing
-                const easeInOutQuad = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-                const easedProgress = easeInOutQuad(progress);
-                
-                if (progress < 0.2) {
-                    // Initial phase - blob stays in place with slight deformation
-                    const phase = progress / 0.2;
-                    const direction = endX > startX ? 1 : -1;
-                    const stretch = phase * 0.1;
-                    
-                    this.currentBlob.style.left = `${startX}%`;
-                    this.currentBlob.style.top = '50%';
-                    this.currentBlob.style.opacity = '0.8';
-                    this.currentBlob.style.transform = `translate3d(-50%, -50%, 0) scale(${1 + stretch}, ${1 - stretch * 0.5}) skewX(${phase * 5 * direction}deg)`;
-                    
-                    this.setStyle(this.birthBlob, 'birthBlob', { opacity: '0' });
-                    this.setStyle(this.dropConnector, 'dropConnector', { opacity: '0' });
-                    
-                } else if (progress < 0.8) {
-                    // Main separation phase - clean and smooth
-                    const phase = (progress - 0.2) / 0.6;
-                    const smoothPhase = easeInOutQuad(phase);
-                    
-                    // Current blob fades and stays in place
-                    this.currentBlob.style.left = `${startX}%`;
-                    this.currentBlob.style.top = '50%';
-                    this.currentBlob.style.opacity = `${0.8 * (1 - smoothPhase)}`;
-                    this.currentBlob.style.transform = `translate3d(-50%, -50%, 0) scale(${1 - smoothPhase * 0.2})`;
-                    
-                    // Birth blob appears and moves
-                    const birthX = startX + (endX - startX) * smoothPhase;
-                    this.birthBlob.style.left = `${birthX}%`;
-                    this.birthBlob.style.top = '50%';
-                    this.birthBlob.style.opacity = `${0.8 * smoothPhase}`;
-                    
-                    const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
-                    birthInner.style.transform = `scale(${0.5 + smoothPhase * 0.5})`;
-                    
-                    // Clean connector animation
-                    if (phase > 0.1 && phase < 0.8) {
-                        const connectorPhase = (phase - 0.1) / 0.7;
-                        const connectorOpacity = Math.sin(connectorPhase * Math.PI) * 0.3;
-                        
-                        // Position between blobs
-                        const connectorX = startX + (birthX - startX) * 0.5;
-                        this.dropConnector.style.left = `${connectorX}%`;
-                        this.dropConnector.style.top = '50%';
-                        this.dropConnector.style.opacity = connectorOpacity;
-                        
-                        const dropInner = this.dropConnector.querySelector('.drop-connector-inner');
-                        const distance = Math.abs(birthX - startX);
-                        const stretchX = 1 + (distance / 40);
-                        const stretchY = Math.max(0.3, 1 - (distance / 100));
-                        
-                        dropInner.style.transform = `scaleX(${stretchX}) scaleY(${stretchY}) rotate(${endX > startX ? 90 : -90}deg)`;
-                    } else {
-                        this.dropConnector.style.opacity = '0';
-                    }
-                    
-                } else {
-                    // Final settling phase
-                    const phase = (progress - 0.8) / 0.2;
-                    
-                    // Current blob fades out
-                    this.currentBlob.style.opacity = '0';
-                    
-                    // Birth blob settles into final position
-                    const finalX = endX;
-                    this.birthBlob.style.left = `${finalX}%`;
-                    this.birthBlob.style.top = '50%';
-                    this.birthBlob.style.opacity = '0.8';
-                    
-                    const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
-                    birthInner.style.transform = 'scale(1)';
-                    
-                    // Connector fades out
-                    this.dropConnector.style.opacity = '0';
-                    
-                    // Trigger swap at the end
-                    if (phase > 0.9 && !this.isAnimating) {
-                        this.isAnimating = true;
-                        this.swapBlobs();
-                    }
-                }
-            }
-            
-            swapBlobs() {
-                // Create new blob
-                const newBlob = document.createElement('div');
-                newBlob.className = `generated-blob blob-variant-${(this.currentSection % 4) + 1}`;
-                newBlob.innerHTML = '<div class="generated-blob-inner"></div>';
-                
-                // Position at birth blob location
-                newBlob.style.left = this.birthBlob.style.left;
-                newBlob.style.top = this.birthBlob.style.top;
-                newBlob.style.opacity = '0.8';
-                
-                this.container.appendChild(newBlob);
-                
-                // Clean up old blob
-                if (this.currentBlob && this.currentBlob !== this.mainBlob) {
-                    const oldBlob = this.currentBlob;
-                    setTimeout(() => {
-                        if (oldBlob.parentNode) {
-                            this.container.removeChild(oldBlob);
-                        }
-                    }, 100);
-                }
-                
-                // Reset birth blob
-                this.birthBlob.style.opacity = '0';
-                const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
-                birthInner.style.transform = 'scale(0)';
-                
-                // Update reference
-                this.currentBlob = newBlob;
-                
-                setTimeout(() => {
-                    this.isAnimating = false;
-                }, 100);
-            }
-        }
-        
-        // Initialize liquid morph controller
-        const liquidMorph = new LiquidMorphController();
-        
-        // Preserved shaking animation
-        const shaker = document.getElementById('shaker');
-        const splitTop = document.querySelector('.split-top');
-        const splitBottom = document.querySelector('.split-bottom');
-
-        // Start shaking immediately
-        shaker.classList.add('shaking');
-
-        // After 2.5s stop shaking and trigger split
-        setTimeout(() => {
-            shaker.classList.remove('shaking');
-            document.querySelector('.loading-container').classList.add('hide');
-            
-            // Trigger split
-            setTimeout(() => {
-                splitTop.classList.add('open');
-                splitBottom.classList.add('open');
-                
-                // Show content with mind-blowing animation
-                setTimeout(() => {
-                    const contentPage = document.querySelector('.content-page');
-                    contentPage.style.animation = 'mindBendingEntry 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
-                    contentPage.style.pointerEvents = 'auto';
-
-                    // Show hero content after animation completes
-                    setTimeout(() => {
-                        document.body.classList.add('scrollable');
-                        document.querySelector('.split-container').style.display = 'none';
-                        document.querySelector('.hero-content').classList.add('show');
-                        
-                        // Initialize scroll effects
-                        initScrollEffects();
-                        initObservers();
-                        
-                        // Bind liquid morph scroll handler
-                        liquidMorph.bindScrollHandler();
-                    }, 2500);
-                }, 900);
-            }, 500);
-        }, 2500);
-
-        // 3D Parallax on scroll
-        function initScrollEffects() {
-            const sections = document.querySelectorAll('section');
-            
-            window.addEventListener('scroll', () => {
-                const scrollY = window.pageYOffset;
-                const windowHeight = window.innerHeight;
-                
-                sections.forEach((section, index) => {
-                    const sectionTop = section.offsetTop;
-                    const sectionHeight = section.offsetHeight;
-                    const sectionCenter = sectionTop + sectionHeight / 2;
-                    const distanceFromCenter = scrollY + windowHeight / 2 - sectionCenter;
-                    const normalizedDistance = distanceFromCenter / windowHeight;
-                    
-                    // 3D rotation effect
-                    const rotateX = normalizedDistance * 15;
-                    const translateZ = Math.abs(normalizedDistance) * -100;
-                    
-                    section.style.transform = `perspective(1000px) rotateX(${rotateX}deg) translateZ(${translateZ}px)`;
-                });
-                
-                // Hero fade out
-                const heroContent = document.querySelector('.hero-content');
-                const heroOpacity = Math.max(0, 1 - scrollY / (windowHeight * 0.8));
-                heroContent.style.opacity = heroOpacity;
-                heroContent.style.transform = `translateY(${scrollY * 0.3}px)`;
-            });
-        }
-
-        // Intersection Observer for fade-in animations
-        function initObservers() {
-            const observerOptions = {
-                threshold: 0.2,
-                rootMargin: '0px 0px -100px 0px'
-            };
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        
-                        // Special handling for info items
-                        if (entry.target.classList.contains('contact-info-card')) {
-                            const infoItems = entry.target.querySelectorAll('.info-item');
-                            infoItems.forEach((item, index) => {
-                                setTimeout(() => {
-                                    item.classList.add('visible');
-                                }, index * 100);
-                            });
-                        }
-                    }
-                });
-            }, observerOptions);
-            
-            // Observe elements
-            document.querySelectorAll('h2, .neu-card, .philosophy-item, .timeline-item, .cocktail-neu-card, .contact-info-card').forEach(el => {
-                observer.observe(el);
-            });
-        }
-    </script>
+    <script src="js/main/main.js"></script>
 </body>
 </html>
