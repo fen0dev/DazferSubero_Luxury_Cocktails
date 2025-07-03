@@ -6,7 +6,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@200;300;400;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <title>Dazfer Subero - Liquid Architect</title>
     <style>
         * {
@@ -41,35 +40,188 @@
             overflow-x: hidden;
         }
 
-        /* Dynamic color states */
-        body[data-color="0"] {
-            --primary: #1a1a1a;
-            --shadow-dark: rgba(0, 0, 0, 0.5);
-            --shadow-light: rgba(255, 255, 255, 0.05);
+        /* Liquid Morphing Container */
+        .liquid-morph-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
         }
 
-        body[data-color="1"] {
-            --primary: #1f1a14;
-            --shadow-dark: rgba(10, 8, 5, 0.5);
-            --shadow-light: rgba(255, 235, 205, 0.05);
+        /* Main Liquid Blob - Neumorphic */
+        .liquid-blob {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            top: 50%;
+            left: 20%;
+            transform: translate(-50%, -50%);
+            animation: breathe 4s ease-in-out infinite;
+            filter: blur(2px);
+            transition: opacity 2s ease, transform 2s ease;
         }
 
-        body[data-color="2"] {
-            --primary: #14191f;
-            --shadow-dark: rgba(5, 8, 12, 0.5);
-            --shadow-light: rgba(205, 225, 255, 0.05);
+        .liquid-blob-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation: morph 8s ease-in-out infinite;
+            transform-style: preserve-3d;
+            position: relative;
+            box-shadow: 
+                30px 30px 80px rgba(0, 0, 0, 0.7),
+                -30px -30px 80px rgba(255, 255, 255, 0.1),
+                inset 15px 15px 30px rgba(0, 0, 0, 0.5),
+                inset -15px -15px 30px rgba(255, 255, 255, 0.05);
         }
 
-        body[data-color="3"] {
-            --primary: #1a1416;
-            --shadow-dark: rgba(8, 5, 6, 0.5);
-            --shadow-light: rgba(255, 205, 215, 0.05);
+        /* Generated Blobs - Neumorphic */
+        .generated-blob {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            opacity: 0;
+            pointer-events: none;
+            filter: blur(1px);
+            will-change: transform, left, top, opacity;
         }
 
-        body[data-color="4"] {
-            --primary: #161a18;
-            --shadow-dark: rgba(6, 8, 7, 0.5);
-            --shadow-light: rgba(215, 255, 235, 0.05);
+        .generated-blob-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            transform-style: preserve-3d;
+            background: var(--primary);
+            box-shadow: 
+                25px 25px 70px rgba(0, 0, 0, 0.6),
+                -25px -25px 70px rgba(255, 255, 255, 0.08),
+                inset 10px 10px 25px rgba(0, 0, 0, 0.4),
+                inset -10px -10px 25px rgba(255, 255, 255, 0.04);
+            transition: border-radius 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Drop Connector - Water drop effect on scroll */
+        .drop-connector {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            opacity: 0;
+            pointer-events: none;
+            filter: blur(0.5px);
+            z-index: 3;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: normal;
+        }
+
+        .drop-connector-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 50%;
+            transform-origin: center;
+            transition: none;
+            box-shadow: 
+                20px 20px 60px rgba(0, 0, 0, 0.6),
+                -20px -20px 60px rgba(255, 255, 255, 0.08),
+                inset 10px 10px 20px rgba(0, 0, 0, 0.4),
+                inset -10px -10px 20px rgba(255, 255, 255, 0.04);
+        }
+
+        /* Birth Blob - For liquid separation effect */
+        .birth-blob {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            opacity: 0;
+            pointer-events: none;
+            filter: blur(1px);
+            z-index: 2;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+
+        .birth-blob-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 50%;
+            transform-origin: center;
+            transition: all 0.3s ease;
+            box-shadow: 
+                30px 30px 80px rgba(0, 0, 0, 0.7),
+                -30px -30px 80px rgba(255, 255, 255, 0.1),
+                inset 15px 15px 30px rgba(0, 0, 0, 0.5),
+                inset -15px -15px 30px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Depth variations for 3D effect */
+        .blob-variant-1 .generated-blob-inner {
+            box-shadow: 
+                35px 35px 90px rgba(0, 0, 0, 0.8),
+                -35px -35px 90px rgba(255, 255, 255, 0.12),
+                inset 20px 20px 40px rgba(0, 0, 0, 0.6),
+                inset -20px -20px 40px rgba(255, 255, 255, 0.06);
+            animation-delay: 0.5s;
+        }
+
+        .blob-variant-2 .generated-blob-inner {
+            box-shadow: 
+                20px 20px 60px rgba(0, 0, 0, 0.5),
+                -20px -20px 60px rgba(255, 255, 255, 0.06),
+                inset 8px 8px 20px rgba(0, 0, 0, 0.3),
+                inset -8px -8px 20px rgba(255, 255, 255, 0.03);
+            animation-delay: 1s;
+        }
+
+        .blob-variant-3 .generated-blob-inner {
+            box-shadow: 
+                40px 40px 100px rgba(0, 0, 0, 0.9),
+                -40px -40px 100px rgba(255, 255, 255, 0.15),
+                inset 25px 25px 50px rgba(0, 0, 0, 0.7),
+                inset -25px -25px 50px rgba(255, 255, 255, 0.07);
+            animation-delay: 1.5s;
+        }
+
+        .blob-variant-4 .generated-blob-inner {
+            box-shadow: 
+                30px 30px 80px rgba(0, 0, 0, 0.7),
+                -30px -30px 80px rgba(255, 255, 255, 0.1),
+                inset 15px 15px 35px rgba(0, 0, 0, 0.5),
+                inset -15px -15px 35px rgba(255, 255, 255, 0.05);
+            animation-delay: 2s;
+        }
+
+        @keyframes morph {
+            0%, 100% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: rotate(0deg) scale(1);
+            }
+            25% {
+                border-radius: 40% 60% 70% 30% / 40% 60% 30% 70%;
+                transform: rotate(90deg) scale(1.1);
+            }
+            50% {
+                border-radius: 70% 30% 40% 60% / 70% 40% 60% 30%;
+                transform: rotate(180deg) scale(0.9);
+            }
+            75% {
+                border-radius: 30% 70% 60% 40% / 30% 70% 40% 60%;
+                transform: rotate(270deg) scale(1.05);
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
         }
 
         /* Loading & Split Animation (Preserved) */
@@ -116,7 +268,7 @@
             transform: translate(-50%, -50%);
             text-align: center;
             color: white;
-            z-index: 1000;
+            z-index: 10000;
             transition: opacity 0.8s ease-out;
         }
 
@@ -162,40 +314,6 @@
 
         @keyframes fadeInText {
             to { opacity: 1; }
-        }
-
-        /* Three.js Canvas */
-        #liquid-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* Loading container needs higher z-index */
-        .loading-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
-            z-index: 10000;
-            transition: opacity 0.8s ease-out;
-        }
-
-        /* Split container needs higher z-index */
-        .split-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
         }
 
         /* Content must be above canvas */
@@ -298,71 +416,6 @@
             text-transform: uppercase;
         }
 
-        /* Neumorphic Elements */
-        .neumorphic-bg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            background: var(--primary);
-            box-shadow: 
-                inset 20px 20px 60px var(--shadow-dark),
-                inset -20px -20px 60px var(--shadow-light);
-            z-index: -1;
-            opacity: 0.3;
-            transition: var(--color-transition);
-            will-change: transform, border-radius;
-        }
-
-        .neumorphic-bg::before,
-        .neumorphic-bg::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            height: 100%;
-            border-radius: inherit;
-            background: inherit;
-            box-shadow: inherit;
-            opacity: 0.5;
-            transition: all 0.8s ease;
-        }
-
-        .neumorphic-bg::before {
-            width: 80%;
-            height: 80%;
-        }
-
-        .neumorphic-bg::after {
-            width: 120%;
-            height: 120%;
-            opacity: 0.3;
-        }
-
-        /* Sections */
-        section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 4rem 2rem;
-            transform-style: preserve-3d;
-            transition: transform 0.5s ease;
-            width: 100%;
-        }
-
-        .section-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
         /* Neumorphic Cards with enhanced shadows */
         .neu-card {
             background: var(--primary);
@@ -383,43 +436,10 @@
             transform: translateX(0);
         }
 
-        .neu-card.fade-out {
-            opacity: 0;
-            transform: translateX(-50px) scale(0.95);
-        }
-
         .neu-card:hover {
             box-shadow: 
                 10px 10px 30px var(--shadow-dark),
                 -10px -10px 30px var(--shadow-light);
-        }
-
-        .neu-button {
-            background: var(--primary);
-            border: none;
-            padding: 1rem 3rem;
-            border-radius: 50px;
-            color: var(--accent-gold);
-            font-weight: 400;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 
-                10px 10px 20px var(--shadow-dark),
-                -10px -10px 20px var(--shadow-light);
-            transition: all 0.3s ease;
-        }
-
-        .neu-button:hover {
-            box-shadow: 
-                5px 5px 10px var(--shadow-dark),
-                -5px -5px 10px var(--shadow-light);
-        }
-
-        .neu-button:active {
-            box-shadow: 
-                inset 5px 5px 10px var(--shadow-dark),
-                inset -5px -5px 10px var(--shadow-light);
         }
 
         /* Typography */
@@ -439,61 +459,26 @@
             transform: translateY(0);
         }
 
-        /* Enhanced animations for scroll */
-        .fade-out {
-            opacity: 0 !important;
-            transform: translateY(-30px) !important;
+        /* Philosophy Grid */
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
         }
 
-        .philosophy-item.fade-out {
-            transform: translateY(-30px) scale(0.9) !important;
+        .philosophy-item {
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
         }
 
-        .timeline-item.fade-out:nth-child(odd) {
-            transform: translateX(-100px) !important;
+        .philosophy-item.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .timeline-item.fade-out:nth-child(even) {
-            transform: translateX(100px) !important;
-        }
-
-        /* Glass Elements */
-        .glass-element {
-            width: 150px;
-            height: 200px;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(184, 115, 51, 0.05));
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            position: absolute;
-            opacity: 0.5;
-            transition: transform 0.3s ease;
-        }
-
-        /* Remove old neumorphic bg and floating orbs */
-        .neumorphic-bg,
-        .floating-orb {
-            display: none;
-        }
-
-        /* Parallax Sections */
-        .philosophy {
-            background: transparent;
-        }
-
-        .craft {
-            background: transparent;
-        }
-
-        .experience {
-            background: transparent;
-        }
-
-        .contact {
-            background: transparent;
-        }
-
-        /* Enhanced Philosophy Section */
         .philosophy-icon {
             width: 120px;
             height: 120px;
@@ -547,23 +532,6 @@
             transform: translateY(0) rotateX(0);
         }
 
-        .cocktail-neu-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, var(--accent-gold) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .cocktail-neu-card:hover::before {
-            opacity: 0.05;
-        }
-
         .cocktail-neu-card:hover {
             transform: translateY(-15px) rotateX(5deg) scale(1.02);
             box-shadow: 
@@ -603,14 +571,7 @@
             transition: all 0.3s ease;
         }
 
-        .ingredient-tag:hover {
-            color: var(--accent-gold);
-            box-shadow: 
-                inset 1px 1px 3px var(--shadow-dark),
-                inset -1px -1px 3px var(--shadow-light);
-        }
-
-        /* Experience Timeline Enhanced */
+        /* Experience Timeline */
         .timeline {
             position: relative;
             padding: 4rem 0;
@@ -626,6 +587,29 @@
             background: linear-gradient(180deg, transparent, var(--accent-gold), transparent);
             transform: translateX(-50%);
             opacity: 0.3;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4rem 0;
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-item:nth-child(even).visible {
+            transform: translateX(0);
         }
 
         .timeline-marker {
@@ -647,11 +631,10 @@
             transition: all 0.5s ease;
         }
 
-        .timeline-item:hover .timeline-marker {
-            transform: scale(1.2) rotate(360deg);
-            box-shadow: 
-                15px 15px 30px var(--shadow-dark),
-                -15px -15px 30px var(--shadow-light);
+        .timeline-content {
+            flex: 0 0 40%;
+            padding: 0 2rem;
+            text-align: center;
         }
 
         .timeline-content h3 {
@@ -661,11 +644,7 @@
             transition: all 0.3s ease;
         }
 
-        .timeline-item:hover .timeline-content h3 {
-            letter-spacing: 0.1em;
-        }
-
-        /* Contact Section Enhanced */
+        /* Contact Section */
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -724,46 +703,55 @@
             transform: translateX(5px);
         }
 
-        /* Floating Orbs */
-        .floating-orb {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, 
-                rgba(212, 175, 55, 0.1), 
-                rgba(212, 175, 55, 0.05), 
-                transparent);
-            filter: blur(40px);
-            animation: floatOrb 20s ease-in-out infinite;
-            pointer-events: none;
+        /* Form Elements */
+        .neu-input {
+            width: 100%;
+            background: var(--primary);
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 25px;
+            color: var(--text-light);
+            font-family: inherit;
+            box-shadow: 
+                inset 5px 5px 10px var(--shadow-dark),
+                inset -5px -5px 10px var(--shadow-light);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
         }
 
-        .orb-1 {
-            top: 10%;
-            left: -10%;
-            animation-delay: 0s;
+        .neu-input:focus {
+            outline: none;
+            box-shadow: 
+                inset 3px 3px 6px var(--shadow-dark),
+                inset -3px -3px 6px var(--shadow-light);
         }
 
-        .orb-2 {
-            bottom: 10%;
-            right: -10%;
-            animation-delay: 10s;
+        .neu-button {
+            background: var(--primary);
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            color: var(--accent-gold);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 
+                10px 10px 20px var(--shadow-dark),
+                -10px -10px 20px var(--shadow-light);
+            transition: all 0.3s ease;
         }
 
-        @keyframes floatOrb {
-            0%, 100% { 
-                transform: translate(0, 0) scale(1);
-                opacity: 0.3;
-            }
-            33% { 
-                transform: translate(100px, -100px) scale(1.2);
-                opacity: 0.5;
-            }
-            66% { 
-                transform: translate(-100px, 100px) scale(0.8);
-                opacity: 0.2;
-            }
+        .neu-button:hover {
+            box-shadow: 
+                5px 5px 10px var(--shadow-dark),
+                -5px -5px 10px var(--shadow-light);
+        }
+
+        .neu-button:active {
+            box-shadow: 
+                inset 5px 5px 10px var(--shadow-dark),
+                inset -5px -5px 10px var(--shadow-light);
         }
 
         /* Responsive adjustments */
@@ -797,24 +785,11 @@
     </style>
 </head>
 <body>
-    <canvas id="liquid-canvas"></canvas>
-    
-    <!-- Add a test div to make sure we can see something -->
-    <div id="liquid-blob" style="
-        position: fixed;
-        width: 400px;
-        height: 400px;
-        top: 50%;
-        left: 20%;
-        transform: translate(-50%, -50%);
-        background: radial-gradient(circle at 30% 30%, #d4af37, #FFD700);
-        border-radius: 50%;
-        filter: blur(40px);
-        opacity: 0.6;
-        z-index: 1;
-        pointer-events: none;
-        transition: all 1s ease;
-    "></div>
+    <div class="liquid-morph-container" id="liquidMorphContainer">
+        <div class="liquid-blob" id="mainBlob">
+            <div class="liquid-blob-inner"></div>
+        </div>
+    </div>
     
     <div class="split-container">
         <div class="split-half split-top"></div>
@@ -867,8 +842,6 @@
                     </div>
                 </div>
             </div>
-            <div class="glass-element" style="top: 10%; right: 5%;"></div>
-            <div class="glass-element" style="bottom: 10%; left: 5%;"></div>
         </section>
 
         <!-- Craft Section -->
@@ -988,6 +961,200 @@
     </div>
 
     <script>
+        // Liquid Morph Animation Controller
+        class LiquidMorphController {
+            constructor() {
+                this.container = document.getElementById('liquidMorphContainer');
+                this.mainBlob = document.getElementById('mainBlob');
+                this.currentBlob = null;
+                this.dropBlob = null;
+                this.scrollPosition = 0;
+                this.lastScrollPosition = 0;
+                this.sectionHeight = window.innerHeight;
+                this.totalSections = 0;
+                this.currentSide = 'left';
+                this.isAnimating = false;
+                
+                this.init();
+            }
+            
+            init() {
+                // Count total sections
+                this.totalSections = document.querySelectorAll('section').length;
+                
+                // Create initial state
+                this.mainBlob.style.opacity = '0.8';
+                this.currentBlob = this.mainBlob;
+                
+                // Create drop connector element
+                this.dropBlob = document.createElement('div');
+                this.dropBlob.className = 'drop-connector';
+                this.dropBlob.innerHTML = '<div class="drop-connector-inner"></div>';
+                this.dropBlob.style.opacity = '0';
+                this.container.appendChild(this.dropBlob);
+                
+                // Bind scroll handler after content is revealed
+                this.bindScrollHandler = this.bindScrollHandler.bind(this);
+            }
+            
+            bindScrollHandler() {
+                window.addEventListener('scroll', this.handleScroll.bind(this), { passive: true });
+                
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    this.sectionHeight = window.innerHeight;
+                });
+            }
+            
+            handleScroll() {
+                this.scrollPosition = window.pageYOffset;
+                const scrollDelta = this.scrollPosition - this.lastScrollPosition;
+                
+                if (Math.abs(scrollDelta) < 1) return; // Ignore tiny movements
+                
+                const currentSection = Math.floor(this.scrollPosition / this.sectionHeight);
+                const sectionProgress = (this.scrollPosition % this.sectionHeight) / this.sectionHeight;
+                const lastSection = Math.floor(this.lastScrollPosition / this.sectionHeight);
+                
+                // Detect section change
+                if (currentSection !== lastSection && currentSection >= 0 && currentSection < this.totalSections) {
+                    this.transitionToNewSection(currentSection, scrollDelta > 0);
+                }
+                
+                // Always animate the drop effect based on scroll
+                this.animateDropEffect(sectionProgress, scrollDelta);
+                
+                this.lastScrollPosition = this.scrollPosition;
+            }
+            
+            transitionToNewSection(section, isForward) {
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+                
+                // Create new blob for this section
+                const newBlob = document.createElement('div');
+                newBlob.className = `generated-blob blob-variant-${(section % 4) + 1}`;
+                newBlob.innerHTML = '<div class="generated-blob-inner"></div>';
+                
+                // Position new blob at current blob's location initially
+                const currentRect = this.currentBlob.getBoundingClientRect();
+                const startX = (currentRect.left + currentRect.width / 2) / window.innerWidth * 100;
+                const startY = (currentRect.top + currentRect.height / 2) / window.innerHeight * 100;
+                
+                newBlob.style.left = `${startX}%`;
+                newBlob.style.top = `${startY}%`;
+                newBlob.style.transform = 'translate(-50%, -50%) scale(0)';
+                newBlob.style.opacity = '0';
+                
+                this.container.appendChild(newBlob);
+                
+                // Animate birth
+                requestAnimationFrame(() => {
+                    newBlob.style.transition = 'all 1s ease';
+                    newBlob.style.opacity = '0.8';
+                    newBlob.style.transform = 'translate(-50%, -50%) scale(1)';
+                    
+                    // Fade out old blob
+                    if (this.currentBlob !== this.mainBlob) {
+                        this.currentBlob.style.opacity = '0';
+                        setTimeout(() => {
+                            if (this.currentBlob.parentNode && this.currentBlob !== this.mainBlob) {
+                                this.container.removeChild(this.currentBlob);
+                            }
+                        }, 1000);
+                    } else {
+                        this.mainBlob.style.opacity = '0';
+                    }
+                    
+                    this.currentBlob = newBlob;
+                    this.currentSide = this.currentSide === 'left' ? 'right' : 'left';
+                    
+                    setTimeout(() => {
+                        this.isAnimating = false;
+                    }, 1000);
+                });
+            }
+            
+            animateDropEffect(progress, scrollDelta) {
+                if (!this.currentBlob || this.currentBlob.style.opacity === '0') return;
+                
+                // Determine current section and movement direction
+                const currentSection = Math.floor(this.scrollPosition / this.sectionHeight);
+                const isEvenSection = currentSection % 2 === 0;
+                const baseX = isEvenSection ? 20 : 80;
+                const targetX = isEvenSection ? 80 : 20;
+                
+                // Calculate blob position
+                const currentX = baseX + (targetX - baseX) * progress;
+                const currentY = 50 + Math.sin(progress * Math.PI * 2) * 10;
+                
+                // Update main blob position
+                this.currentBlob.style.left = `${currentX}%`;
+                this.currentBlob.style.top = `${currentY}%`;
+                
+                // Create water drop effect
+                const dropStrength = Math.min(Math.abs(scrollDelta) / 20, 1);
+                const isScrollingDown = scrollDelta > 0;
+                
+                // Position drop connector
+                this.dropBlob.style.left = `${currentX}%`;
+                this.dropBlob.style.top = `${currentY}%`;
+                this.dropBlob.style.opacity = dropStrength * 0.6;
+                
+                const dropInner = this.dropBlob.querySelector('.drop-connector-inner');
+                if (dropInner) {
+                    // Calculate stretch based on scroll direction and speed
+                    const stretchX = 1 + dropStrength * 1.5;
+                    const stretchY = 1 - dropStrength * 0.4;
+                    const skewAngle = isScrollingDown ? -dropStrength * 15 : dropStrength * 15;
+                    const rotation = (targetX > baseX ? 1 : -1) * dropStrength * 10;
+                    
+                    // Create teardrop shape
+                    const borderRadius = `50% 50% ${50 + dropStrength * 30}% ${50 - dropStrength * 20}% / ${50 - dropStrength * 20}% ${50 - dropStrength * 20}% ${50 + dropStrength * 30}% ${50 + dropStrength * 30}%`;
+                    
+                    dropInner.style.transform = `
+                        scaleX(${stretchX}) 
+                        scaleY(${stretchY}) 
+                        skewX(${skewAngle}deg)
+                        rotate(${rotation}deg)
+                    `;
+                    dropInner.style.borderRadius = borderRadius;
+                    
+                    // Dynamic shadows for depth
+                    const shadowOffset = dropStrength * 30;
+                    dropInner.style.boxShadow = `
+                        ${shadowOffset}px ${isScrollingDown ? shadowOffset : -shadowOffset}px ${60 + dropStrength * 40}px rgba(0, 0, 0, ${0.4 + dropStrength * 0.2}),
+                        -${shadowOffset}px ${isScrollingDown ? -shadowOffset : shadowOffset}px ${60 + dropStrength * 40}px rgba(255, 255, 255, 0.06),
+                        inset ${shadowOffset * 0.5}px 0 ${30 + dropStrength * 20}px rgba(0, 0, 0, ${0.3 + dropStrength * 0.1}),
+                        inset -${shadowOffset * 0.5}px 0 ${30 + dropStrength * 20}px rgba(255, 255, 255, 0.03)
+                    `;
+                }
+                
+                // Add rotation and 3D effect to main blob
+                const blobRotateY = progress * 180;
+                const blobRotateX = Math.sin(progress * Math.PI) * 20;
+                const blobScale = 0.9 + Math.sin(progress * Math.PI) * 0.2;
+                
+                this.currentBlob.style.transform = `
+                    translate(-50%, -50%)
+                    rotateY(${blobRotateY}deg)
+                    rotateX(${blobRotateX}deg)
+                    scale(${blobScale})
+                `;
+                
+                // Morph main blob shape
+                const blobInner = this.currentBlob.querySelector('.generated-blob-inner');
+                if (blobInner) {
+                    const morphAmount = progress * 100;
+                    const morphRadius = `${60 + morphAmount % 30}% ${40 - morphAmount % 20}% ${30 + morphAmount % 30}% ${70 - morphAmount % 20}% / ${60 - morphAmount % 20}% ${30 + morphAmount % 30}% ${70 - morphAmount % 20}% ${40 + morphAmount % 30}%`;
+                    blobInner.style.borderRadius = morphRadius;
+                }
+            }
+        }
+        
+        // Initialize liquid morph controller
+        const liquidMorph = new LiquidMorphController();
+        
         // Preserved shaking animation
         const shaker = document.getElementById('shaker');
         const splitTop = document.querySelector('.split-top');
@@ -1020,8 +1187,10 @@
                         
                         // Initialize scroll effects
                         initScrollEffects();
-                        initColorTransitions();
                         initObservers();
+                        
+                        // Bind liquid morph scroll handler
+                        liquidMorph.bindScrollHandler();
                     }, 2500);
                 }, 900);
             }, 500);
@@ -1030,8 +1199,6 @@
         // 3D Parallax on scroll
         function initScrollEffects() {
             const sections = document.querySelectorAll('section');
-            const neuCards = document.querySelectorAll('.neu-card');
-            const glassElements = document.querySelectorAll('.glass-element');
             
             window.addEventListener('scroll', () => {
                 const scrollY = window.pageYOffset;
@@ -1051,41 +1218,11 @@
                     section.style.transform = `perspective(1000px) rotateX(${rotateX}deg) translateZ(${translateZ}px)`;
                 });
                 
-                // Parallax for glass elements
-                glassElements.forEach((element, index) => {
-                    const speed = 0.3 + (index * 0.1);
-                    const yPos = -(scrollY * speed);
-                    element.style.transform = `translateY(${yPos}px) rotate(${scrollY * 0.1}deg)`;
-                });
-                
                 // Hero fade out
                 const heroContent = document.querySelector('.hero-content');
                 const heroOpacity = Math.max(0, 1 - scrollY / (windowHeight * 0.8));
                 heroContent.style.opacity = heroOpacity;
                 heroContent.style.transform = `translateY(${scrollY * 0.3}px)`;
-            });
-        }
-
-        // Color transitions based on scroll
-        function initColorTransitions() {
-            const sections = document.querySelectorAll('section');
-            
-            window.addEventListener('scroll', () => {
-                const scrollY = window.pageYOffset;
-                const windowHeight = window.innerHeight;
-                const totalHeight = document.body.scrollHeight;
-                const scrollProgress = scrollY / (totalHeight - windowHeight);
-                
-                // Change body color based on scroll position
-                if (scrollProgress < 0.25) {
-                    document.body.className = 'scrollable color-1';
-                } else if (scrollProgress < 0.5) {
-                    document.body.className = 'scrollable color-2';
-                } else if (scrollProgress < 0.75) {
-                    document.body.className = 'scrollable color-3';
-                } else {
-                    document.body.className = 'scrollable color-4';
-                }
             });
         }
 
@@ -1100,12 +1237,22 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
+                        
+                        // Special handling for info items
+                        if (entry.target.classList.contains('contact-info-card')) {
+                            const infoItems = entry.target.querySelectorAll('.info-item');
+                            infoItems.forEach((item, index) => {
+                                setTimeout(() => {
+                                    item.classList.add('visible');
+                                }, index * 100);
+                            });
+                        }
                     }
                 });
             }, observerOptions);
             
             // Observe elements
-            document.querySelectorAll('h2, .neu-card, .philosophy-item, .timeline-item').forEach(el => {
+            document.querySelectorAll('h2, .neu-card, .philosophy-item, .timeline-item, .cocktail-neu-card, .contact-info-card').forEach(el => {
                 observer.observe(el);
             });
         }
