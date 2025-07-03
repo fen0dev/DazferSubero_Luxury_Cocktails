@@ -63,6 +63,7 @@
             animation: breathe 4s ease-in-out infinite;
             filter: blur(2px);
             transition: opacity 2s ease, transform 2s ease;
+            z-index: 101;
         }
 
         .liquid-blob-inner {
@@ -78,6 +79,7 @@
                 -30px -30px 80px rgba(255, 255, 255, 0.1),
                 inset 15px 15px 30px rgba(0, 0, 0, 0.5),
                 inset -15px -15px 30px rgba(255, 255, 255, 0.05);
+                z-index: 100;
         }
 
         /* Generated Blobs - Neumorphic */
@@ -89,6 +91,7 @@
             pointer-events: none;
             filter: blur(1px);
             will-change: transform, left, top, opacity;
+            z-index: 102;
         }
 
         .generated-blob-inner {
@@ -961,19 +964,20 @@
     </div>
 
     <script>
-        // Liquid Morph Animation Controller
         class LiquidMorphController {
             constructor() {
                 this.container = document.getElementById('liquidMorphContainer');
                 this.mainBlob = document.getElementById('mainBlob');
                 this.currentBlob = null;
-                this.dropBlob = null;
+                this.birthBlob = null;
+                this.dropConnector = null;
                 this.scrollPosition = 0;
                 this.lastScrollPosition = 0;
                 this.sectionHeight = window.innerHeight;
                 this.totalSections = 0;
                 this.currentSide = 'left';
                 this.isAnimating = false;
+                this.currentSection = 0;
                 
                 this.init();
             }
@@ -986,12 +990,17 @@
                 this.mainBlob.style.opacity = '0.8';
                 this.currentBlob = this.mainBlob;
                 
+                // Create birth blob element
+                this.birthBlob = document.createElement('div');
+                this.birthBlob.className = 'birth-blob';
+                this.birthBlob.innerHTML = '<div class="birth-blob-inner"></div>';
+                this.container.appendChild(this.birthBlob);
+                
                 // Create drop connector element
-                this.dropBlob = document.createElement('div');
-                this.dropBlob.className = 'drop-connector';
-                this.dropBlob.innerHTML = '<div class="drop-connector-inner"></div>';
-                this.dropBlob.style.opacity = '0';
-                this.container.appendChild(this.dropBlob);
+                this.dropConnector = document.createElement('div');
+                this.dropConnector.className = 'drop-connector';
+                this.dropConnector.innerHTML = '<div class="drop-connector-inner"></div>';
+                this.container.appendChild(this.dropConnector);
                 
                 // Bind scroll handler after content is revealed
                 this.bindScrollHandler = this.bindScrollHandler.bind(this);
@@ -1016,139 +1025,185 @@
                 const sectionProgress = (this.scrollPosition % this.sectionHeight) / this.sectionHeight;
                 const lastSection = Math.floor(this.lastScrollPosition / this.sectionHeight);
                 
-                // Detect section change
-                if (currentSection !== lastSection && currentSection >= 0 && currentSection < this.totalSections) {
-                    this.transitionToNewSection(currentSection, scrollDelta > 0);
-                }
+                // Update current section
+                this.currentSection = currentSection;
                 
-                // Always animate the drop effect based on scroll
-                this.animateDropEffect(sectionProgress, scrollDelta);
+                // Animate the liquid separation effect
+                this.animateLiquidSeparation(sectionProgress, currentSection);
                 
                 this.lastScrollPosition = this.scrollPosition;
             }
             
-            transitionToNewSection(section, isForward) {
-                if (this.isAnimating) return;
-                this.isAnimating = true;
+            animateLiquidSeparation(progress, section) {
+                if (!this.currentBlob) return;
                 
-                // Create new blob for this section
+                // Determine position based on section
+                const isEvenSection = section % 2 === 0;
+                const startX = isEvenSection ? 20 : 80;
+                const endX = isEvenSection ? 80 : 20;
+                
+                // Three phases of animation
+                // Phase 1 (0-0.3): Birth blob appears inside current blob
+                // Phase 2 (0.3-0.7): Horizontal water drop connects and stretches
+                // Phase 3 (0.7-1): New blob completes journey to opposite side
+                
+                if (progress < 0.3) {
+                    // Phase 1: Birth animation
+                    const birthProgress = progress / 0.3;
+                    
+                    // Keep current blob in place and fully visible
+                    this.currentBlob.style.left = `${startX}%`;
+                    this.currentBlob.style.top = '50%';
+                    this.currentBlob.style.opacity = '0.8';
+                    this.currentBlob.style.transform = 'translate(-50%, -50%) scale(1)';
+                    
+                    // Birth blob appears inside current blob
+                    this.birthBlob.style.left = `${startX}%`;
+                    this.birthBlob.style.top = '50%';
+                    this.birthBlob.style.opacity = birthProgress * 0.6;
+                    
+                    const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
+                    birthInner.style.transform = `scale(${birthProgress * 0.4})`;
+                    birthInner.style.borderRadius = '50%';
+                    
+                    // Hide connector completely in this phase
+                    this.dropConnector.style.opacity = '0';
+                    this.dropConnector.style.transform = 'translate(-50%, -50%) scale(0)';
+                    
+                } else if (progress < 0.7) {
+                    // Phase 2: Separation and stretch
+                    const stretchProgress = (progress - 0.3) / 0.4;
+                    
+                    // Current blob stays visible but starts to deform
+                    this.currentBlob.style.left = `${startX}%`;
+                    this.currentBlob.style.top = '50%';
+                    this.currentBlob.style.opacity = '0.8';
+                    const currentScale = 1 - stretchProgress * 0.15;
+                    const skewX = (endX > startX ? 1 : -1) * stretchProgress * 10;
+                    this.currentBlob.style.transform = `translate(-50%, -50%) scale(${currentScale}) skewX(${skewX}deg)`;
+                    
+                    // Birth blob starts moving
+                    const birthX = startX + (endX - startX) * stretchProgress * 0.4;
+                    this.birthBlob.style.left = `${birthX}%`;
+                    this.birthBlob.style.top = '50%';
+                    this.birthBlob.style.opacity = 0.6 + stretchProgress * 0.2;
+                    
+                    const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
+                    const birthScale = 0.4 + stretchProgress * 0.4;
+                    const birthSkew = (endX > startX ? -1 : 1) * stretchProgress * 8;
+                    birthInner.style.transform = `scale(${birthScale}) skewX(${birthSkew}deg)`;
+                    
+                    // Horizontal water drop connector - positioned between blobs
+                    const connectorX = startX + (endX - startX) * stretchProgress * 0.2;
+                    this.dropConnector.style.left = `${connectorX}%`;
+                    this.dropConnector.style.top = '50%';
+                    this.dropConnector.style.opacity = stretchProgress * 0.5;
+                    this.dropConnector.style.transform = 'translate(-50%, -50%)';
+                    
+                    const dropInner = this.dropConnector.querySelector('.drop-connector-inner');
+                    const stretchX = 1 + stretchProgress * 2.5;
+                    const stretchY = 1 - stretchProgress * 0.4;
+                    const rotation = endX > startX ? 90 : -90;
+                    
+                    dropInner.style.transform = `scaleX(${stretchX}) scaleY(${stretchY}) rotate(${rotation}deg)`;
+                    dropInner.style.borderRadius = `${50 - stretchProgress * 30}% ${50 + stretchProgress * 30}% ${50 + stretchProgress * 30}% ${50 - stretchProgress * 30}%`;
+                    
+                } else {
+                    // Phase 3: Complete separation
+                    const finalProgress = (progress - 0.7) / 0.3;
+                    
+                    // Old blob fades and shrinks
+                    this.currentBlob.style.opacity = 0.8 * (1 - finalProgress);
+                    const finalCurrentScale = 0.85 - finalProgress * 0.35;
+                    this.currentBlob.style.transform = `translate(-50%, -50%) scale(${finalCurrentScale})`;
+                    
+                    // New blob reaches final position
+                    const finalX = startX + (endX - startX) * (0.4 + finalProgress * 0.6);
+                    this.birthBlob.style.left = `${finalX}%`;
+                    this.birthBlob.style.top = '50%';
+                    this.birthBlob.style.opacity = 0.8;
+                    
+                    const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
+                    const finalScale = 0.8 + finalProgress * 0.2;
+                    birthInner.style.transform = `scale(${finalScale})`;
+                    birthInner.style.borderRadius = `${60 - finalProgress * 10}% ${40 + finalProgress * 10}% ${30 + finalProgress * 20}% ${70 - finalProgress * 20}% / ${60 + finalProgress * 10}% ${30 - finalProgress * 10}% ${70 + finalProgress * 10}% ${40 - finalProgress * 10}%`;
+                    
+                    // Connector shrinks and fades
+                    this.dropConnector.style.opacity = (1 - finalProgress) * 0.3;
+                    const connectorX = startX + (endX - startX) * (0.2 + finalProgress * 0.3);
+                    this.dropConnector.style.left = `${connectorX}%`;
+                    
+                    const dropInner = this.dropConnector.querySelector('.drop-connector-inner');
+                    const finalStretchX = 3.5 - finalProgress * 2.5;
+                    const finalStretchY = 0.6 - finalProgress * 0.4;
+                    dropInner.style.transform = `scaleX(${finalStretchX}) scaleY(${finalStretchY}) rotate(${endX > startX ? 90 : -90}deg)`;
+                    
+                    // Swap blobs at the end of animation
+                    if (finalProgress > 0.95 && !this.isAnimating) {
+                        this.isAnimating = true;
+                        this.swapBlobs();
+                    }
+                }
+                
+                // Add subtle floating animation to all elements
+                const floatY = Math.sin(progress * Math.PI * 2) * 3;
+                const floatX = Math.cos(progress * Math.PI * 2) * 2;
+                
+                if (this.currentBlob.style.opacity !== '0') {
+                    const currentTop = parseFloat(this.currentBlob.style.top) || 50;
+                    this.currentBlob.style.top = `${50 + floatY}%`;
+                }
+                
+                if (this.birthBlob.style.opacity !== '0') {
+                    const birthTop = parseFloat(this.birthBlob.style.top) || 50;
+                    this.birthBlob.style.top = `${50 + floatY * 0.7}%`;
+                }
+            }
+            
+            swapBlobs() {
+                // Create new blob for next section
                 const newBlob = document.createElement('div');
-                newBlob.className = `generated-blob blob-variant-${(section % 4) + 1}`;
+                newBlob.className = `generated-blob blob-variant-${(this.currentSection % 4) + 1}`;
                 newBlob.innerHTML = '<div class="generated-blob-inner"></div>';
                 
-                // Position new blob at current blob's location initially
-                const currentRect = this.currentBlob.getBoundingClientRect();
-                const startX = (currentRect.left + currentRect.width / 2) / window.innerWidth * 100;
-                const startY = (currentRect.top + currentRect.height / 2) / window.innerHeight * 100;
+                // Position at birth blob location
+                const birthLeft = this.birthBlob.style.left;
+                const birthTop = this.birthBlob.style.top;
                 
-                newBlob.style.left = `${startX}%`;
-                newBlob.style.top = `${startY}%`;
-                newBlob.style.transform = 'translate(-50%, -50%) scale(0)';
-                newBlob.style.opacity = '0';
+                newBlob.style.left = birthLeft;
+                newBlob.style.top = birthTop;
+                newBlob.style.opacity = '0.8';
+                newBlob.style.transform = 'translate(-50%, -50%) scale(1)';
                 
                 this.container.appendChild(newBlob);
                 
-                // Animate birth
-                requestAnimationFrame(() => {
-                    newBlob.style.transition = 'all 1s ease';
-                    newBlob.style.opacity = '0.8';
-                    newBlob.style.transform = 'translate(-50%, -50%) scale(1)';
-                    
-                    // Fade out old blob
-                    if (this.currentBlob !== this.mainBlob) {
-                        this.currentBlob.style.opacity = '0';
-                        setTimeout(() => {
-                            if (this.currentBlob.parentNode && this.currentBlob !== this.mainBlob) {
-                                this.container.removeChild(this.currentBlob);
-                            }
-                        }, 1000);
-                    } else {
-                        this.mainBlob.style.opacity = '0';
-                    }
-                    
-                    this.currentBlob = newBlob;
-                    this.currentSide = this.currentSide === 'left' ? 'right' : 'left';
-                    
+                // Clean up old blob immediately
+                if (this.currentBlob && this.currentBlob !== this.mainBlob) {
+                    const oldBlob = this.currentBlob;
+                    oldBlob.style.opacity = '0';
                     setTimeout(() => {
-                        this.isAnimating = false;
-                    }, 1000);
-                });
-            }
-            
-            animateDropEffect(progress, scrollDelta) {
-                if (!this.currentBlob || this.currentBlob.style.opacity === '0') return;
-                
-                // Determine current section and movement direction
-                const currentSection = Math.floor(this.scrollPosition / this.sectionHeight);
-                const isEvenSection = currentSection % 2 === 0;
-                const baseX = isEvenSection ? 20 : 80;
-                const targetX = isEvenSection ? 80 : 20;
-                
-                // Calculate blob position
-                const currentX = baseX + (targetX - baseX) * progress;
-                const currentY = 50 + Math.sin(progress * Math.PI * 2) * 10;
-                
-                // Update main blob position
-                this.currentBlob.style.left = `${currentX}%`;
-                this.currentBlob.style.top = `${currentY}%`;
-                
-                // Create water drop effect
-                const dropStrength = Math.min(Math.abs(scrollDelta) / 20, 1);
-                const isScrollingDown = scrollDelta > 0;
-                
-                // Position drop connector
-                this.dropBlob.style.left = `${currentX}%`;
-                this.dropBlob.style.top = `${currentY}%`;
-                this.dropBlob.style.opacity = dropStrength * 0.6;
-                
-                const dropInner = this.dropBlob.querySelector('.drop-connector-inner');
-                if (dropInner) {
-                    // Calculate stretch based on scroll direction and speed
-                    const stretchX = 1 + dropStrength * 1.5;
-                    const stretchY = 1 - dropStrength * 0.4;
-                    const skewAngle = isScrollingDown ? -dropStrength * 15 : dropStrength * 15;
-                    const rotation = (targetX > baseX ? 1 : -1) * dropStrength * 10;
-                    
-                    // Create teardrop shape
-                    const borderRadius = `50% 50% ${50 + dropStrength * 30}% ${50 - dropStrength * 20}% / ${50 - dropStrength * 20}% ${50 - dropStrength * 20}% ${50 + dropStrength * 30}% ${50 + dropStrength * 30}%`;
-                    
-                    dropInner.style.transform = `
-                        scaleX(${stretchX}) 
-                        scaleY(${stretchY}) 
-                        skewX(${skewAngle}deg)
-                        rotate(${rotation}deg)
-                    `;
-                    dropInner.style.borderRadius = borderRadius;
-                    
-                    // Dynamic shadows for depth
-                    const shadowOffset = dropStrength * 30;
-                    dropInner.style.boxShadow = `
-                        ${shadowOffset}px ${isScrollingDown ? shadowOffset : -shadowOffset}px ${60 + dropStrength * 40}px rgba(0, 0, 0, ${0.4 + dropStrength * 0.2}),
-                        -${shadowOffset}px ${isScrollingDown ? -shadowOffset : shadowOffset}px ${60 + dropStrength * 40}px rgba(255, 255, 255, 0.06),
-                        inset ${shadowOffset * 0.5}px 0 ${30 + dropStrength * 20}px rgba(0, 0, 0, ${0.3 + dropStrength * 0.1}),
-                        inset -${shadowOffset * 0.5}px 0 ${30 + dropStrength * 20}px rgba(255, 255, 255, 0.03)
-                    `;
+                        if (oldBlob.parentNode) {
+                            this.container.removeChild(oldBlob);
+                        }
+                    }, 300);
                 }
                 
-                // Add rotation and 3D effect to main blob
-                const blobRotateY = progress * 180;
-                const blobRotateX = Math.sin(progress * Math.PI) * 20;
-                const blobScale = 0.9 + Math.sin(progress * Math.PI) * 0.2;
+                // Reset birth blob immediately
+                this.birthBlob.style.opacity = '0';
+                this.birthBlob.style.transform = 'translate(-50%, -50%) scale(0)';
+                const birthInner = this.birthBlob.querySelector('.birth-blob-inner');
+                birthInner.style.transform = 'scale(0)';
                 
-                this.currentBlob.style.transform = `
-                    translate(-50%, -50%)
-                    rotateY(${blobRotateY}deg)
-                    rotateX(${blobRotateX}deg)
-                    scale(${blobScale})
-                `;
+                // Reset connector
+                this.dropConnector.style.opacity = '0';
+                this.dropConnector.style.transform = 'translate(-50%, -50%) scale(0)';
                 
-                // Morph main blob shape
-                const blobInner = this.currentBlob.querySelector('.generated-blob-inner');
-                if (blobInner) {
-                    const morphAmount = progress * 100;
-                    const morphRadius = `${60 + morphAmount % 30}% ${40 - morphAmount % 20}% ${30 + morphAmount % 30}% ${70 - morphAmount % 20}% / ${60 - morphAmount % 20}% ${30 + morphAmount % 30}% ${70 - morphAmount % 20}% ${40 + morphAmount % 30}%`;
-                    blobInner.style.borderRadius = morphRadius;
-                }
+                // Update current blob reference
+                this.currentBlob = newBlob;
+                
+                setTimeout(() => {
+                    this.isAnimating = false;
+                }, 100);
             }
         }
         
