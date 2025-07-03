@@ -1234,6 +1234,8 @@ textarea.form-input {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: 4rem 0 2rem;
     margin-top: 6rem;
+    position: relative;
+    z-index: 10;
 }
 
 .footer-content {
@@ -1273,6 +1275,8 @@ textarea.form-input {
     width: 24px;
     height: 24px;
     color: var(--text-light);
+    stroke: var(--text-light);
+    fill: none;
     transition: all 0.3s ease;
     z-index: 2;
     position: relative;
@@ -1305,6 +1309,7 @@ textarea.form-input {
 
 .social-link:hover svg {
     color: var(--primary);
+    stroke: var(--primary);
     transform: scale(1.1);
 }
 
