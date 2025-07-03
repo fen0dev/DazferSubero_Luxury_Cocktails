@@ -30,35 +30,211 @@ body.scrollable {
     overflow-x: hidden;
 }
 
-/* Dynamic color states */
-body[data-color="0"] {
-    --primary: #1a1a1a;
-    --shadow-dark: rgba(0, 0, 0, 0.5);
-    --shadow-light: rgba(255, 255, 255, 0.05);
+/* Liquid Morphing Container */
+.liquid-morph-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
 }
 
-body[data-color="1"] {
-    --primary: #1f1a14;
-    --shadow-dark: rgba(10, 8, 5, 0.5);
-    --shadow-light: rgba(255, 235, 205, 0.05);
+/* Main Liquid Blob - Neumorphic */
+.liquid-blob {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    top: 50%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+    animation: breathe 4s ease-in-out infinite;
+    filter: blur(2px);
+    transition: opacity 2s ease, transform 2s ease;
+    z-index: 101;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
 }
 
-body[data-color="2"] {
-    --primary: #14191f;
-    --shadow-dark: rgba(5, 8, 12, 0.5);
-    --shadow-light: rgba(205, 225, 255, 0.05);
+.liquid-blob-inner {
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    animation: morph 8s ease-in-out infinite;
+    transform-style: preserve-3d;
+    position: relative;
+    box-shadow: 
+        30px 30px 80px rgba(0, 0, 0, 0.7),
+        -30px -30px 80px rgba(255, 255, 255, 0.1),
+        inset 15px 15px 30px rgba(0, 0, 0, 0.5),
+        inset -15px -15px 30px rgba(255, 255, 255, 0.05);
+        z-index: 100;
 }
 
-body[data-color="3"] {
-    --primary: #1a1416;
-    --shadow-dark: rgba(8, 5, 6, 0.5);
-    --shadow-light: rgba(255, 205, 215, 0.05);
+/* Generated Blobs - Neumorphic */
+.generated-blob {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    opacity: 0;
+    pointer-events: none;
+    filter: blur(1px);
+    will-change: transform, left, top, opacity;
+    z-index: 102;
+    transform: translate3d(0, 0, 0); /* Force GPU acceleration */
+    backface-visibility: hidden; /* Prevent flickering */
 }
 
-body[data-color="4"] {
-    --primary: #161a18;
-    --shadow-dark: rgba(6, 8, 7, 0.5);
-    --shadow-light: rgba(215, 255, 235, 0.05);
+.generated-blob-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    transform-style: preserve-3d;
+    background: var(--primary);
+    box-shadow: 
+        25px 25px 70px rgba(0, 0, 0, 0.6),
+        -25px -25px 70px rgba(255, 255, 255, 0.08),
+        inset 10px 10px 25px rgba(0, 0, 0, 0.4),
+        inset -10px -10px 25px rgba(255, 255, 255, 0.04);
+    /* Remove transition for JS animation */
+}
+
+/* Drop Connector - Water drop effect on scroll */
+.drop-connector {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+    pointer-events: none;
+    filter: blur(0.5px);
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: normal;
+    will-change: transform, opacity, left, top;
+    backface-visibility: hidden;
+}
+
+.drop-connector-inner {
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    border-radius: 50%;
+    transform-origin: center;
+    box-shadow: 
+        20px 20px 60px rgba(0, 0, 0, 0.6),
+        -20px -20px 60px rgba(255, 255, 255, 0.08),
+        inset 10px 10px 20px rgba(0, 0, 0, 0.4),
+        inset -10px -10px 20px rgba(255, 255, 255, 0.04);
+    will-change: transform;
+}
+
+/* Birth Blob - For liquid separation effect */
+.birth-blob {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    opacity: 0;
+    pointer-events: none;
+    filter: blur(1px);
+    z-index: 2;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+    will-change: transform, opacity, left, top;
+    backface-visibility: hidden;
+}
+
+.birth-blob-inner {
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    border-radius: 50%;
+    transform-origin: center;
+    box-shadow: 
+        30px 30px 80px rgba(0, 0, 0, 0.7),
+        -30px -30px 80px rgba(255, 255, 255, 0.1),
+        inset 15px 15px 30px rgba(0, 0, 0, 0.5),
+        inset -15px -15px 30px rgba(255, 255, 255, 0.05);
+    will-change: transform;
+}
+
+/* Depth variations for 3D effect */
+.blob-variant-1 .generated-blob-inner {
+    box-shadow: 
+        35px 35px 90px rgba(0, 0, 0, 0.8),
+        -35px -35px 90px rgba(255, 255, 255, 0.12),
+        inset 20px 20px 40px rgba(0, 0, 0, 0.6),
+        inset -20px -20px 40px rgba(255, 255, 255, 0.06);
+    animation-delay: 0.5s;
+}
+
+.blob-variant-2 .generated-blob-inner {
+    box-shadow: 
+        20px 20px 60px rgba(0, 0, 0, 0.5),
+        -20px -20px 60px rgba(255, 255, 255, 0.06),
+        inset 8px 8px 20px rgba(0, 0, 0, 0.3),
+        inset -8px -8px 20px rgba(255, 255, 255, 0.03);
+    animation-delay: 1s;
+}
+
+.blob-variant-3 .generated-blob-inner {
+    box-shadow: 
+        40px 40px 100px rgba(0, 0, 0, 0.9),
+        -40px -40px 100px rgba(255, 255, 255, 0.15),
+        inset 25px 25px 50px rgba(0, 0, 0, 0.7),
+        inset -25px -25px 50px rgba(255, 255, 255, 0.07);
+    animation-delay: 1.5s;
+}
+
+.blob-variant-4 .generated-blob-inner {
+    box-shadow: 
+        30px 30px 80px rgba(0, 0, 0, 0.7),
+        -30px -30px 80px rgba(255, 255, 255, 0.1),
+        inset 15px 15px 35px rgba(0, 0, 0, 0.5),
+        inset -15px -15px 35px rgba(255, 255, 255, 0.05);
+    animation-delay: 2s;
+}
+
+@keyframes morph {
+    0% {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        transform: rotate(0deg) scale(1) translateZ(0);
+    }
+    16.66% {
+        border-radius: 45% 55% 62% 38% / 53% 47% 34% 66%;
+        transform: rotate(51deg) scale(1.03) translateZ(0);
+    }
+    33.33% {
+        border-radius: 38% 62% 71% 29% / 41% 59% 31% 69%;
+        transform: rotate(102deg) scale(1.08) translateZ(0);
+    }
+    50% {
+        border-radius: 71% 29% 42% 58% / 68% 42% 58% 32%;
+        transform: rotate(180deg) scale(0.96) translateZ(0);
+    }
+    66.66% {
+        border-radius: 32% 68% 64% 36% / 38% 62% 43% 57%;
+        transform: rotate(251deg) scale(1.02) translateZ(0);
+    }
+    83.33% {
+        border-radius: 58% 42% 35% 65% / 47% 53% 61% 39%;
+        transform: rotate(302deg) scale(1.06) translateZ(0);
+    }
+    100% {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        transform: rotate(360deg) scale(1) translateZ(0);
+    }
+}
+
+@keyframes breathe {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
 }
 
 /* Loading & Split Animation (Preserved) */
@@ -105,7 +281,7 @@ body[data-color="4"] {
     transform: translate(-50%, -50%);
     text-align: center;
     color: white;
-    z-index: 1000;
+    z-index: 10000;
     transition: opacity 0.8s ease-out;
 }
 
@@ -151,40 +327,6 @@ body[data-color="4"] {
 
 @keyframes fadeInText {
     to { opacity: 1; }
-}
-
-/* Three.js Canvas */
-#liquid-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    pointer-events: none;
-}
-
-/* Loading container needs higher z-index */
-.loading-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white;
-    z-index: 10000;
-    transition: opacity 0.8s ease-out;
-}
-
-/* Split container needs higher z-index */
-.split-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9999;
 }
 
 /* Content must be above canvas */
@@ -287,71 +429,6 @@ section {
     text-transform: uppercase;
 }
 
-/* Neumorphic Elements */
-.neumorphic-bg {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    background: var(--primary);
-    box-shadow: 
-        inset 20px 20px 60px var(--shadow-dark),
-        inset -20px -20px 60px var(--shadow-light);
-    z-index: -1;
-    opacity: 0.3;
-    transition: var(--color-transition);
-    will-change: transform, border-radius;
-}
-
-.neumorphic-bg::before,
-.neumorphic-bg::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    background: inherit;
-    box-shadow: inherit;
-    opacity: 0.5;
-    transition: all 0.8s ease;
-}
-
-.neumorphic-bg::before {
-    width: 80%;
-    height: 80%;
-}
-
-.neumorphic-bg::after {
-    width: 120%;
-    height: 120%;
-    opacity: 0.3;
-}
-
-/* Sections */
-section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    padding: 4rem 2rem;
-    transform-style: preserve-3d;
-    transition: transform 0.5s ease;
-    width: 100%;
-}
-
-.section-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-}
-
 /* Neumorphic Cards with enhanced shadows */
 .neu-card {
     background: var(--primary);
@@ -372,43 +449,10 @@ section {
     transform: translateX(0);
 }
 
-.neu-card.fade-out {
-    opacity: 0;
-    transform: translateX(-50px) scale(0.95);
-}
-
 .neu-card:hover {
     box-shadow: 
         10px 10px 30px var(--shadow-dark),
         -10px -10px 30px var(--shadow-light);
-}
-
-.neu-button {
-    background: var(--primary);
-    border: none;
-    padding: 1rem 3rem;
-    border-radius: 50px;
-    color: var(--accent-gold);
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: 
-        10px 10px 20px var(--shadow-dark),
-        -10px -10px 20px var(--shadow-light);
-    transition: all 0.3s ease;
-}
-
-.neu-button:hover {
-    box-shadow: 
-        5px 5px 10px var(--shadow-dark),
-        -5px -5px 10px var(--shadow-light);
-}
-
-.neu-button:active {
-    box-shadow: 
-        inset 5px 5px 10px var(--shadow-dark),
-        inset -5px -5px 10px var(--shadow-light);
 }
 
 /* Typography */
@@ -428,61 +472,26 @@ h2.visible {
     transform: translateY(0);
 }
 
-/* Enhanced animations for scroll */
-.fade-out {
-    opacity: 0 !important;
-    transform: translateY(-30px) !important;
+/* Philosophy Grid */
+.philosophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-top: 3rem;
 }
 
-.philosophy-item.fade-out {
-    transform: translateY(-30px) scale(0.9) !important;
+.philosophy-item {
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
 }
 
-.timeline-item.fade-out:nth-child(odd) {
-    transform: translateX(-100px) !important;
+.philosophy-item.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.timeline-item.fade-out:nth-child(even) {
-    transform: translateX(100px) !important;
-}
-
-/* Glass Elements */
-.glass-element {
-    width: 150px;
-    height: 200px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(184, 115, 51, 0.05));
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    position: absolute;
-    opacity: 0.5;
-    transition: transform 0.3s ease;
-}
-
-/* Remove old neumorphic bg and floating orbs */
-.neumorphic-bg,
-.floating-orb {
-    display: none;
-}
-
-/* Parallax Sections */
-.philosophy {
-    background: transparent;
-}
-
-.craft {
-    background: transparent;
-}
-
-.experience {
-    background: transparent;
-}
-
-.contact {
-    background: transparent;
-}
-
-/* Enhanced Philosophy Section */
 .philosophy-icon {
     width: 120px;
     height: 120px;
@@ -536,23 +545,6 @@ h2.visible {
     transform: translateY(0) rotateX(0);
 }
 
-.cocktail-neu-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, var(--accent-gold) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-}
-
-.cocktail-neu-card:hover::before {
-    opacity: 0.05;
-}
-
 .cocktail-neu-card:hover {
     transform: translateY(-15px) rotateX(5deg) scale(1.02);
     box-shadow: 
@@ -592,14 +584,7 @@ h2.visible {
     transition: all 0.3s ease;
 }
 
-.ingredient-tag:hover {
-    color: var(--accent-gold);
-    box-shadow: 
-        inset 1px 1px 3px var(--shadow-dark),
-        inset -1px -1px 3px var(--shadow-light);
-}
-
-/* Experience Timeline Enhanced */
+/* Experience Timeline */
 .timeline {
     position: relative;
     padding: 4rem 0;
@@ -615,6 +600,29 @@ h2.visible {
     background: linear-gradient(180deg, transparent, var(--accent-gold), transparent);
     transform: translateX(-50%);
     opacity: 0.3;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4rem 0;
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 0.8s ease;
+}
+
+.timeline-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.timeline-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.timeline-item:nth-child(even).visible {
+    transform: translateX(0);
 }
 
 .timeline-marker {
@@ -636,11 +644,10 @@ h2.visible {
     transition: all 0.5s ease;
 }
 
-.timeline-item:hover .timeline-marker {
-    transform: scale(1.2) rotate(360deg);
-    box-shadow: 
-        15px 15px 30px var(--shadow-dark),
-        -15px -15px 30px var(--shadow-light);
+.timeline-content {
+    flex: 0 0 40%;
+    padding: 0 2rem;
+    text-align: center;
 }
 
 .timeline-content h3 {
@@ -650,11 +657,7 @@ h2.visible {
     transition: all 0.3s ease;
 }
 
-.timeline-item:hover .timeline-content h3 {
-    letter-spacing: 0.1em;
-}
-
-/* Contact Section Enhanced */
+/* Contact Section */
 .contact-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -713,46 +716,55 @@ h2.visible {
     transform: translateX(5px);
 }
 
-/* Floating Orbs */
-.floating-orb {
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, 
-        rgba(212, 175, 55, 0.1), 
-        rgba(212, 175, 55, 0.05), 
-        transparent);
-    filter: blur(40px);
-    animation: floatOrb 20s ease-in-out infinite;
-    pointer-events: none;
+/* Form Elements */
+.neu-input {
+    width: 100%;
+    background: var(--primary);
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 25px;
+    color: var(--text-light);
+    font-family: inherit;
+    box-shadow: 
+        inset 5px 5px 10px var(--shadow-dark),
+        inset -5px -5px 10px var(--shadow-light);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
 }
 
-.orb-1 {
-    top: 10%;
-    left: -10%;
-    animation-delay: 0s;
+.neu-input:focus {
+    outline: none;
+    box-shadow: 
+        inset 3px 3px 6px var(--shadow-dark),
+        inset -3px -3px 6px var(--shadow-light);
 }
 
-.orb-2 {
-    bottom: 10%;
-    right: -10%;
-    animation-delay: 10s;
+.neu-button {
+    background: var(--primary);
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    color: var(--accent-gold);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 
+        10px 10px 20px var(--shadow-dark),
+        -10px -10px 20px var(--shadow-light);
+    transition: all 0.3s ease;
 }
 
-@keyframes floatOrb {
-    0%, 100% { 
-        transform: translate(0, 0) scale(1);
-        opacity: 0.3;
-    }
-    33% { 
-        transform: translate(100px, -100px) scale(1.2);
-        opacity: 0.5;
-    }
-    66% { 
-        transform: translate(-100px, 100px) scale(0.8);
-        opacity: 0.2;
-    }
+.neu-button:hover {
+    box-shadow: 
+        5px 5px 10px var(--shadow-dark),
+        -5px -5px 10px var(--shadow-light);
+}
+
+.neu-button:active {
+    box-shadow: 
+        inset 5px 5px 10px var(--shadow-dark),
+        inset -5px -5px 10px var(--shadow-light);
 }
 
 /* Responsive adjustments */
