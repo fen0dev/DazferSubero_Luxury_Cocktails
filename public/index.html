@@ -419,7 +419,7 @@
                     this.currentBlob.style.left = `${startX}%`;
                     this.currentBlob.style.top = '50%';
                     this.currentBlob.style.opacity = '0.8';
-                    this.currentBlob.style.transform = `translate(-50%, -50%) scale(${1 + stretch}, ${1 - stretch * 0.5}) skewX(${phase * 5 * direction}deg)`;
+                    this.currentBlob.style.transform = `translate3d(-50%, -50%, 0) scale(${1 + stretch}, ${1 - stretch * 0.5}) skewX(${phase * 5 * direction}deg)`;
                     
                     this.setStyle(this.birthBlob, 'birthBlob', { opacity: '0' });
                     this.setStyle(this.dropConnector, 'dropConnector', { opacity: '0' });
@@ -433,7 +433,7 @@
                     this.currentBlob.style.left = `${startX}%`;
                     this.currentBlob.style.top = '50%';
                     this.currentBlob.style.opacity = `${0.8 * (1 - smoothPhase)}`;
-                    this.currentBlob.style.transform = `translate(-50%, -50%) scale(${1 - smoothPhase * 0.2})`;
+                    this.currentBlob.style.transform = `translate3d(-50%, -50%, 0) scale(${1 - smoothPhase * 0.2})`;
                     
                     // Birth blob appears and moves
                     const birthX = startX + (endX - startX) * smoothPhase;

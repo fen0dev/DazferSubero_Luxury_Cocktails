@@ -359,13 +359,10 @@ section {
 
 /* Add subtle backdrop to content for readability */
 .section-content {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     width: 100%;
-    background: rgba(26, 26, 26, 0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 30px;
-    padding: 2rem;
+    padding: 4rem 2rem;
 }
 
 @keyframes mindBendingEntry {
@@ -429,31 +426,7 @@ section {
     text-transform: uppercase;
 }
 
-/* Neumorphic Cards with enhanced shadows */
-.neu-card {
-    background: var(--primary);
-    border-radius: 30px;
-    padding: 3rem;
-    margin: 2rem auto;
-    max-width: 800px;
-    box-shadow: 
-        20px 20px 60px var(--shadow-dark),
-        -20px -20px 60px var(--shadow-light);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0;
-    transform: translateX(-50px);
-}
-
-.neu-card.visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.neu-card:hover {
-    box-shadow: 
-        10px 10px 30px var(--shadow-dark),
-        -10px -10px 30px var(--shadow-light);
-}
+/* Removed old neumorphic cards - using new enhanced designs */
 
 /* Typography */
 h2 {
@@ -793,5 +766,466 @@ h2.visible {
     
     .contact-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ===== ENHANCED PROFESSIONAL SECTIONS ===== */
+
+/* Section Headers */
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-header h2 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(3rem, 6vw, 5rem);
+    letter-spacing: 0.08em;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-copper));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+}
+
+.header-line {
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+    margin: 0 auto;
+}
+
+/* Image Placeholders */
+.image-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    background: var(--primary);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 
+        inset 5px 5px 15px rgba(0, 0, 0, 0.5),
+        inset -5px -5px 15px rgba(255, 255, 255, 0.05);
+}
+
+.image-frame.large {
+    min-height: 500px;
+}
+
+.placeholder-text {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+}
+
+/* ===== PHILOSOPHY SECTION ===== */
+.philosophy-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 5rem;
+    align-items: center;
+}
+
+.intro-text .lead-text {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: var(--text-light);
+    font-weight: 300;
+}
+
+.philosophy-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.philosophy-card {
+    position: relative;
+    background: var(--primary);
+    border-radius: 20px;
+    padding: 2.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.philosophy-card:hover {
+    transform: translateY(-10px);
+}
+
+.card-inner {
+    position: relative;
+    z-index: 2;
+}
+
+.card-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-copper));
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+.philosophy-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.philosophy-card p {
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+.card-accent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-gold), var(--accent-copper));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.philosophy-card:hover .card-accent {
+    transform: scaleX(1);
+}
+
+/* ===== CRAFT SECTION ===== */
+.cocktail-showcase {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+}
+
+.cocktail-card {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 3rem;
+    align-items: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.cocktail-card:nth-child(even) {
+    grid-template-columns: 1fr 350px;
+}
+
+.cocktail-card:nth-child(even) .cocktail-image-placeholder {
+    order: 2;
+}
+
+.cocktail-card:nth-child(even) .cocktail-content {
+    order: 1;
+}
+
+.cocktail-image-placeholder {
+    width: 100%;
+    height: 100%;
+}
+
+.cocktail-content {
+    position: relative;
+}
+
+.cocktail-number {
+    position: absolute;
+    top: -20px;
+    left: 0;
+    font-size: 4rem;
+    font-weight: 700;
+    color: rgba(212, 175, 55, 0.1);
+    font-family: 'Bebas Neue', cursive;
+}
+
+.cocktail-card h4 {
+    font-size: 2rem;
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.cocktail-card p {
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.cocktail-ingredients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.ingredient-tag {
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    padding: 0.5rem 1.2rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    color: var(--accent-gold);
+    transition: all 0.3s ease;
+}
+
+.ingredient-tag:hover {
+    background: rgba(212, 175, 55, 0.2);
+    transform: translateY(-2px);
+}
+
+/* ===== EXPERIENCE SECTION ===== */
+.experience-showcase {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+}
+
+.experience-timeline {
+    position: relative;
+    padding-left: 3rem;
+}
+
+.experience-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 30px;
+    bottom: 30px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent-gold), transparent);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    padding-left: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -3rem;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    background: var(--primary);
+    border: 2px solid var(--accent-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--accent-gold);
+}
+
+.timeline-content h3 {
+    font-size: 1.5rem;
+    color: var(--accent-gold);
+    margin-bottom: 0.5rem;
+}
+
+.timeline-content p {
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+/* ===== CONTACT SECTION ===== */
+.contact-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+}
+
+.contact-info h3 {
+    font-size: 2.5rem;
+    color: var(--accent-gold);
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+}
+
+.contact-intro {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-light);
+    margin-bottom: 3rem;
+}
+
+.contact-details {
+    margin-bottom: 3rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.detail-icon {
+    font-size: 1.5rem;
+    margin-right: 1.5rem;
+    margin-top: 0.2rem;
+}
+
+.detail-content {
+    flex: 1;
+}
+
+.detail-label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.3rem;
+}
+
+.detail-value {
+    font-size: 1.2rem;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a.detail-value:hover {
+    color: var(--accent-gold);
+}
+
+.contact-visual {
+    margin-top: 2rem;
+}
+
+.contact-form-wrapper {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    padding: 3rem;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-input {
+    width: 100%;
+    background: var(--primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    color: var(--text-light);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--text-dim);
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-button {
+    position: relative;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-copper));
+    border: none;
+    padding: 1.2rem 3rem;
+    border-radius: 12px;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.form-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+}
+
+.button-accent {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.form-button:active .button-accent {
+    width: 300px;
+    height: 300px;
+}
+
+/* Responsive Design for New Sections */
+@media (max-width: 1024px) {
+    .philosophy-intro {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .cocktail-card,
+    .cocktail-card:nth-child(even) {
+        grid-template-columns: 1fr;
+    }
+    
+    .cocktail-card:nth-child(even) .cocktail-image-placeholder,
+    .cocktail-card:nth-child(even) .cocktail-content {
+        order: unset;
+    }
+    
+    .experience-showcase,
+    .contact-wrapper {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .philosophy-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .section-header h2 {
+        font-size: 3rem;
+    }
+    
+    .cocktail-number {
+        font-size: 3rem;
+    }
+    
+    .contact-form-wrapper {
+        padding: 2rem;
     }
 }
