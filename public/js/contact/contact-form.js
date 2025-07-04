@@ -62,7 +62,7 @@ class ContactFormHandler {
             // Setup form
             this.setupForm();
             this.initialized = true;
-            console.log('[+] Contact form initialized successfully');
+            //console.log('[+] Contact form initialized successfully');
         } catch (error) {
             console.error('Failed to initialize contact form:', error);
             this.showNotification('Failed to initialize form. Please refresh the page.', 'error');
@@ -212,7 +212,7 @@ class ContactFormHandler {
             }
 
         } catch (error) {
-            console.error('[-] Error submitting form:', error);
+            //console.error('[-] Error submitting form:', error);
             this.showNotification('Sorry, there was an error sending your message. Please try again or email directly to hello@dazfersubero.com', 'error');
         } finally {
             this.setLoadingState(false);
