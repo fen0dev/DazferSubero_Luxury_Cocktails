@@ -2,6 +2,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
 }
 
 :root {
@@ -48,11 +50,32 @@ body {
 html, body {
     overflow-x: hidden;
     width: 100%;
+    position: relative;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body.scrollable {
     overflow: auto;
     overflow-x: hidden;
+}
+
+/* Prevent text selection on UI elements */
+.form-button,
+.social-link,
+.ingredient-tag,
+.philosophy-card,
+.cocktail-card {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Enable smooth scrolling on iOS */
+.content-page {
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Liquid Morphing Container */
@@ -242,11 +265,6 @@ body.scrollable .liquid-morph-container {
         inset 15px 15px 35px rgba(0, 0, 0, 0.5),
         inset -15px -15px 35px rgba(255, 255, 255, 0.05);
     animation-delay: 2s;
-}
-
-@keyframes breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.03); }
 }
 
 @keyframes morph {
@@ -1619,12 +1637,6 @@ section {
     animation: shake 0.3s ease-in-out;
 }
 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(-5px); }
-}
-
 .error-message {
     display: block;
     color: #f44336;
@@ -2032,5 +2044,52 @@ section {
             -10px -10px 20px rgba(255, 255, 255, 0.08),
             10px 10px 20px rgba(0, 0, 0, 0.4),
             inset 1px 1px 2px rgba(255, 255, 255, 0.15);
+    }
+}
+
+/* Additional Mobile Optimizations */
+@media (max-width: 768px) {
+    /* Improve scrolling performance */
+    * {
+        -webkit-transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        -webkit-perspective: 1000;
+    }
+    
+    /* Disable hover effects on touch devices */
+    @media (hover: none) {
+        .philosophy-card:hover,
+        .cocktail-card:hover,
+        .ingredient-tag:hover,
+        .social-link:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+    }
+    
+    /* Fix for iOS input zoom */
+    input[type="text"],
+    input[type="email"],
+    textarea {
+        font-size: 16px !important;
+    }
+    
+    /* Better touch scrolling */
+    .content-page {
+        -webkit-overflow-scrolling: touch;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    
+    /* Reduce animation complexity on mobile */
+    .liquid-blob,
+    .generated-blob {
+        will-change: transform;
+    }
+    
+    /* Fix mobile viewport height */
+    .hero {
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
     }
 }

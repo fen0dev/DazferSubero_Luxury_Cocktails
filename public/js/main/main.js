@@ -271,6 +271,9 @@ class LiquidMorphController {
 document.addEventListener('DOMContentLoaded', function() {
     // Prevent overscroll bounce on iOS
     if (isMobile()) {
+        document.body.style.overscrollBehavior = 'none';
+        document.documentElement.style.overscrollBehavior = 'none';
+        
         document.body.addEventListener('touchmove', function(e) {
             if (e.target.closest('.contact-form')) return; // Allow form scrolling
             
