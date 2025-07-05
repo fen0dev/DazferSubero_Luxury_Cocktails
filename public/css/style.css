@@ -19,6 +19,14 @@
     --animation-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+@media (max-width: 768px) {
+    :root {
+        --mobile-scale: 0.7;
+        --mobile-blob-size: 250px;
+        --mobile-rise-distance: 20px;
+    }
+}
+
 html {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
@@ -34,6 +42,12 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body.scrollable {
@@ -1691,5 +1705,332 @@ section {
         left: 20px;
         right: 20px;
         max-width: none;
+    }
+}
+
+/* ===== MOBILE OPTIMIZATIONS ===== */
+/* Mobile Liquid Blob Adjustments */
+@media (max-width: 768px) {
+    .liquid-blob {
+        width: var(--mobile-blob-size);
+        height: var(--mobile-blob-size);
+        top: 20%;
+    }
+    
+    .generated-blob {
+        width: var(--mobile-blob-size);
+        height: var(--mobile-blob-size);
+    }
+    
+    .drop-connector {
+        width: calc(var(--mobile-blob-size) * 0.75);
+        height: calc(var(--mobile-blob-size) * 0.75);
+    }
+    
+    .birth-blob {
+        width: var(--mobile-blob-size);
+        height: var(--mobile-blob-size);
+    }
+    
+    /* Reduce shadow intensity for performance */
+    .liquid-blob-inner,
+    .generated-blob-inner,
+    .drop-connector-inner,
+    .birth-blob-inner {
+        box-shadow: 
+            8px 8px 20px rgba(0, 0, 0, 0.4),
+            -8px -8px 20px rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* Mobile Hero Section */
+@media (max-width: 768px) {
+    .hero {
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for mobile */
+    }
+    
+    .hero h1 {
+        font-size: clamp(3rem, 12vw, 5rem);
+        letter-spacing: 0.02em;
+    }
+    
+    .hero-subtitle {
+        font-size: clamp(0.9rem, 3vw, 1.2rem);
+        letter-spacing: 0.2em;
+    }
+}
+
+/* Mobile Section Spacing */
+@media (max-width: 768px) {
+    section {
+        min-height: auto;
+        padding: 3rem 1rem;
+    }
+    
+    .section-content {
+        padding: 2rem 1rem;
+    }
+    
+    /* Maintain 3D effects but reduce intensity */
+    section:not(.hero) {
+        transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+    }
+}
+
+/* Mobile Philosophy Section */
+@media (max-width: 768px) {
+    .philosophy-intro {
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .intro-text .lead-text {
+        font-size: 1.1rem;
+        line-height: 1.7;
+    }
+    
+    .philosophy-card {
+        padding: 2rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .philosophy-card h3 {
+        font-size: 1.3rem;
+    }
+    
+    /* Maintain hover effects on touch */
+    .philosophy-card:active {
+        transform: translateY(-5px);
+        box-shadow: 
+            -8px -8px 16px rgba(255, 255, 255, 0.05),
+            8px 8px 16px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Mobile Craft Section */
+@media (max-width: 768px) {
+    .cocktail-card {
+        padding: 1.5rem;
+        gap: 2rem;
+    }
+    
+    .cocktail-image-placeholder {
+        height: 250px;
+    }
+    
+    .image-frame {
+        min-height: 200px;
+    }
+    
+    .cocktail-card h4 {
+        font-size: 1.6rem;
+    }
+    
+    .cocktail-card p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .ingredient-tag {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Mobile Experience Section */
+@media (max-width: 768px) {
+    .experience-visual .image-frame.large {
+        min-height: 300px;
+    }
+    
+    .experience-timeline {
+        padding-left: 2rem;
+    }
+    
+    .timeline-marker {
+        width: 40px;
+        height: 40px;
+        left: -2rem;
+        font-size: 0.9rem;
+    }
+    
+    .timeline-content h3 {
+        font-size: 1.3rem;
+    }
+    
+    .timeline-content p {
+        font-size: 0.95rem;
+    }
+}
+
+/* Mobile Contact Section */
+@media (max-width: 768px) {
+    .contact-info h3 {
+        font-size: 2rem;
+    }
+    
+    .contact-intro {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .detail-icon {
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+    
+    .detail-label {
+        font-size: 0.8rem;
+    }
+    
+    .detail-value {
+        font-size: 1.1rem;
+    }
+    
+    .contact-form-wrapper {
+        padding: 2rem 1.5rem;
+    }
+    
+    .form-input {
+        padding: 1rem 1.2rem;
+        font-size: 0.95rem;
+    }
+    
+    .form-button {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+}
+
+/* Mobile Footer */
+@media (max-width: 768px) {
+    .footer {
+        padding: 3rem 0 2rem;
+        margin-top: 4rem;
+    }
+    
+    .social-link {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .social-link svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .company-name {
+        font-size: 1.3rem;
+    }
+    
+    .company-tagline {
+        font-size: 0.7rem;
+    }
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase tap targets */
+    .social-link,
+    .form-button,
+    .ingredient-tag {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Remove hover states, use active instead */
+    .philosophy-card:hover,
+    .cocktail-card:hover,
+    .social-link:hover {
+        transform: none;
+    }
+    
+    .philosophy-card:active,
+    .cocktail-card:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+    /* Reduce animation complexity */
+    @keyframes morph {
+        0%, 100% {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            transform: rotate(0deg) scale(1);
+        }
+        50% {
+            border-radius: 30% 70% 70% 30% / 30% 70% 70% 30%;
+            transform: rotate(180deg) scale(1);
+        }
+    }
+    
+    /* Simplify mind-bending entry for mobile */
+    @keyframes mindBendingEntry {
+        0% {
+            opacity: 0;
+            transform: scale(0.8) translateY(50px);
+            filter: blur(10px);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0);
+        }
+    }
+    
+    /* Disable complex filters on low-end devices */
+    @media (max-width: 768px) and (-webkit-max-device-pixel-ratio: 2) {
+        .liquid-blob,
+        .generated-blob {
+            filter: none !important;
+        }
+    }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 812px) and (orientation: landscape) {
+    .hero {
+        min-height: 100vh;
+    }
+    
+    .hero h1 {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+    }
+    
+    section {
+        padding: 2rem 1rem;
+    }
+    
+    .liquid-blob {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+/* High-resolution mobile screens */
+@media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 3) {
+    /* Ensure text remains crisp */
+    body {
+        -webkit-font-smoothing: subpixel-antialiased;
+    }
+    
+    /* Sharper shadows for retina displays */
+    .image-frame.revealed {
+        box-shadow: 
+            -10px -10px 20px rgba(255, 255, 255, 0.08),
+            10px 10px 20px rgba(0, 0, 0, 0.4),
+            inset 1px 1px 2px rgba(255, 255, 255, 0.15);
     }
 }

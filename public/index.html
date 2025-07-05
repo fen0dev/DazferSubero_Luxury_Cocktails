@@ -5,12 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@200;300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css?v=2">
     <title>Dazfer Subero - Liquid Architect</title>
 </head>
+<style>
+    * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
+    
+    /* Prevent text selection on UI elements */
+    .form-button,
+    .social-link,
+    .ingredient-tag,
+    .philosophy-card,
+    .cocktail-card {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Enable smooth scrolling on iOS */
+    .content-page {
+        -webkit-overflow-scrolling: touch;
+    }
+</style>
 <body>
     <div class="liquid-morph-container" id="liquidMorphContainer">
         <!-- SVG Filter for Gooey Effect -->
@@ -69,7 +95,7 @@
                     <div class="intro-image-placeholder">
                         <!-- Image placeholder for later -->
                         <div class="image-frame">
-                            <span class="placeholder-text">Philosophy Image</span>
+                            <img src="./assets/BSS1.jpeg" alt="Dazfer Subero - Master bartender crafting perfection" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
                         </div>
                     </div>
                 </div>
@@ -121,7 +147,7 @@
                     <div class="cocktail-card">
                         <div class="cocktail-image-placeholder">
                             <div class="image-frame">
-                                <span class="placeholder-text">Golden Hour</span>
+                                <img src="./assets/BS5.jpeg" alt="Dazfer Subero - Master Pouring Class" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
                             </div>
                         </div>
                         <div class="cocktail-content">
@@ -186,7 +212,7 @@
                 <div class="experience-showcase">
                     <div class="experience-visual">
                         <div class="image-frame large">
-                            <span class="placeholder-text">Experience Journey</span>
+                            <img src="./assets/BS 4.jpeg" alt="Dazfer Subero - Liquid Architect Consultancy" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
                         </div>
                     </div>
                     

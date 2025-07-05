@@ -1,3 +1,17 @@
+/**
+ * MAIN Handler for Index.html
+ * Handles background circle gooey effect
+ * Some section animations
+ * Shaker animation at the beginning 
+*/
+
+// Global mobile detection function
+function isMobile() {
+    return window.innerWidth <= 768 || 
+           'ontouchstart' in window || 
+           navigator.maxTouchPoints > 0;
+}
+
 class LiquidMorphController {
     constructor() {
         this.container = document.getElementById('liquidMorphContainer');
@@ -13,44 +27,58 @@ class LiquidMorphController {
         this.isAnimating = false;
         this.currentSection = 0;
         
-        // Simple smooth animation properties
+        // Animation properties
         this.currentProgress = 0;
         this.targetProgress = 0;
         this.lastProgress = 0;
         this.animationFrame = null;
         
-        // Track scroll direction
-        this.scrollDirection = 1; // 1 for down, -1 for up
-        this.isReversing = false;
+        // Mobile specific
+        this.isMobileDevice = this.checkMobile();
+        this.isScrolling = false;
+        this.scrollTimeout = null;
+        this.lastTouchY = 0;
+        this.velocity = 0;
         
-        // Cache for performance
-        this.lastStyles = {
-            currentBlob: { left: '', top: '', opacity: '', transform: '' },
-            birthBlob: { left: '', top: '', opacity: '', transform: '' },
-            dropConnector: { left: '', top: '', opacity: '', transform: '' }
-        };
-        
-        // Cache window width for transform calculations
+        // Performance
         this.windowWidth = window.innerWidth;
+        this.useSimpleAnimation = this.isMobileDevice;
         
         this.init();
+    }
+    
+    checkMobile() {
+        return window.innerWidth <= 768 || 
+               'ontouchstart' in window || 
+               navigator.maxTouchPoints > 0;
     }
     
     init() {
         // Count total sections (excluding hero)
         this.totalSections = document.querySelectorAll('section:not(.hero)').length;
         
-        // Create initial state - super simple
+        // Mobile-specific initialization
+        this.blobSize = this.isMobileDevice ? 250 : 400;
+        
+        // Create initial state with will-change for performance
         this.mainBlob.style.opacity = '0.8';
         this.mainBlob.style.left = '0';
-        this.mainBlob.style.top = '30%';
-        this.mainBlob.style.transform = 'translateX(0vw) translateY(-50%)';
+        this.mainBlob.style.top = this.isMobileDevice ? '20%' : '30%';
+        this.mainBlob.style.transform = 'translate3d(0, -50%, 0)';
+        this.mainBlob.style.willChange = 'transform';
         this.currentBlob = this.mainBlob;
+        
+        // Adjust blob size for mobile
+        if (this.isMobileDevice) {
+            this.mainBlob.style.width = this.blobSize + 'px';
+            this.mainBlob.style.height = this.blobSize + 'px';
+        }
         
         // Start with perfect circle
         const mainInner = this.mainBlob.querySelector('.liquid-blob-inner');
         if (mainInner) {
             mainInner.style.transform = 'scale(1)';
+            mainInner.style.willChange = 'transform';
         }
         
         // Create birth blob element
@@ -70,26 +98,50 @@ class LiquidMorphController {
     }
     
     bindScrollHandler() {
-        // Throttled scroll handler
-        let scrollTimeout;
-        let lastScrollTime = 0;
-        const throttleDelay = 16; // ~60fps
-        
-        const throttledScroll = () => {
-            const now = Date.now();
+        // Mobile-optimized scroll handling
+        if (this.isMobileDevice) {
+            // Use touch events for better performance
+            let touchStartY = 0;
+            let lastTime = Date.now();
             
-            if (now - lastScrollTime >= throttleDelay) {
-                lastScrollTime = now;
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].pageY;
+                this.lastTouchY = touchStartY;
+                lastTime = Date.now();
+            }, { passive: true });
+            
+            document.addEventListener('touchmove', (e) => {
+                const touchY = e.touches[0].pageY;
+                const currentTime = Date.now();
+                const timeDiff = currentTime - lastTime;
+                
+                if (timeDiff > 0) {
+                    this.velocity = (this.lastTouchY - touchY) / timeDiff;
+                }
+                
+                this.lastTouchY = touchY;
+                lastTime = currentTime;
+                
+                // Update scroll position immediately
                 this.handleScroll();
-            } else {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    this.handleScroll();
-                }, throttleDelay);
-            }
-        };
+            }, { passive: true });
+            
+            document.addEventListener('touchend', () => {
+                // Apply momentum
+                this.velocity *= 0.95;
+            }, { passive: true });
+        }
         
-        window.addEventListener('scroll', throttledScroll, { passive: true });
+        // Regular scroll event as fallback
+        let scrollRAF = null;
+        window.addEventListener('scroll', () => {
+            if (scrollRAF) return;
+            
+            scrollRAF = requestAnimationFrame(() => {
+                this.handleScroll();
+                scrollRAF = null;
+            });
+        }, { passive: true });
         
         // Start animation loop
         this.startAnimationLoop();
@@ -98,55 +150,37 @@ class LiquidMorphController {
         window.addEventListener('resize', () => {
             this.sectionHeight = window.innerHeight;
             this.windowWidth = window.innerWidth;
+            this.isMobileDevice = this.checkMobile();
+            this.useSimpleAnimation = this.isMobileDevice;
         });
     }
     
     startAnimationLoop() {
-        let lastTime = 0;
-        let skipFrames = 0;
-        
-        const animate = (timestamp) => {
-            const deltaTime = timestamp - lastTime;
-            lastTime = timestamp;
-            
-            // Skip frames if performance is poor
-            if (deltaTime > 33) { // Less than 30fps
-                skipFrames = 2;
-            }
-            
-            if (skipFrames > 0) {
-                skipFrames--;
+        const animate = () => {
+            // Skip if not scrolling on mobile
+            if (this.isMobileDevice && !this.isScrolling && Math.abs(this.velocity) < 0.01) {
                 this.animationFrame = requestAnimationFrame(animate);
                 return;
             }
             
-            // Frame-rate independent animation
-            const frameCorrection = Math.min(deltaTime / 16.67, 2); // 60fps baseline
-            
-            // Enhanced smooth interpolation
+            // Ultra smooth interpolation for mobile
             const diff = this.targetProgress - this.currentProgress;
-            const absDiff = Math.abs(diff);
+            const smoothing = this.isMobileDevice ? 0.15 : 0.08;
             
-            // Ultra smooth following with even gentler transitions
-            let smoothingFactor = 0.06; // Even smoother base
-            if (absDiff > 0.8) {
-                smoothingFactor = 0.2; // Still smooth for jumps
-            } else if (absDiff > 0.3) {
-                smoothingFactor = 0.1; // Gentle medium speed
-            } else if (absDiff < 0.01) {
-                smoothingFactor = 0.03; // Ultra smooth settling
-            }
-            
-            // Apply frame correction for consistent speed
-            this.currentProgress += diff * smoothingFactor * frameCorrection;
+            this.currentProgress += diff * smoothing;
             
             // Snap to target if very close
-            if (absDiff < 0.001) {
+            if (Math.abs(diff) < 0.001) {
                 this.currentProgress = this.targetProgress;
             }
             
-            // Always animate to ensure smooth transitions
+            // Apply animation
             this.animateLiquidSeparation(this.currentProgress, this.currentSection);
+            
+            // Decay velocity
+            if (this.isMobileDevice) {
+                this.velocity *= 0.95;
+            }
             
             this.animationFrame = requestAnimationFrame(animate);
         };
@@ -156,6 +190,15 @@ class LiquidMorphController {
     
     handleScroll() {
         this.scrollPosition = window.pageYOffset;
+        this.isScrolling = true;
+        
+        // Clear existing timeout
+        clearTimeout(this.scrollTimeout);
+        
+        // Set scrolling to false after scroll ends
+        this.scrollTimeout = setTimeout(() => {
+            this.isScrolling = false;
+        }, 150);
         
         // Get actual content height excluding hero
         const heroHeight = document.querySelector('.hero').offsetHeight;
@@ -172,61 +215,47 @@ class LiquidMorphController {
         this.lastScrollPosition = this.scrollPosition;
     }
     
-    setStyle(element, styleName, styles) {
-        // Only update if changed (reduces reflows)
-        const cache = this.lastStyles[styleName];
-        let hasChanges = false;
-        
-        for (const [key, value] of Object.entries(styles)) {
-            if (cache[key] !== value) {
-                cache[key] = value;
-                hasChanges = true;
-            }
-        }
-        
-        if (hasChanges) {
-            Object.assign(element.style, styles);
-        }
-    }
-    
     animateLiquidSeparation(progress, section) {
         if (!this.currentBlob) return;
         
-        // Use total progress for continuous movement
         const totalProgress = progress;
-        
-        // Create a continuous zigzag path through all sections
         const totalSections = this.totalSections;
         const progressPerSection = 1 / totalSections;
         const currentSectionProgress = totalProgress / progressPerSection;
         const currentFullSection = Math.floor(currentSectionProgress);
         const currentPartialProgress = currentSectionProgress - currentFullSection;
         
+        // Adjust movement range for mobile
+        const maxX = this.isMobileDevice ? 75 : 85;
+        
         // Calculate X position with continuous zigzag
         let currentX;
         if (currentFullSection % 2 === 0) {
-            // Even sections: left to right (0 to 85)
-            currentX = 0 + (85 * currentPartialProgress);
+            currentX = 0 + (maxX * currentPartialProgress);
         } else {
-            // Odd sections: right to left (85 to 0)
-            currentX = 85 - (85 * currentPartialProgress);
+            currentX = maxX - (maxX * currentPartialProgress);
         }
         
-        // Clamp to valid range
-        currentX = Math.max(0, Math.min(85, currentX));
+        currentX = Math.max(0, Math.min(maxX, currentX));
         
-        // Apply position
-        this.currentBlob.style.transform = `translateX(${currentX}vw) translateY(-50%)`;
+        // Use translate3d for hardware acceleration on mobile
+        if (this.isMobileDevice) {
+            this.currentBlob.style.transform = `translate3d(${currentX}vw, -50%, 0)`;
+        } else {
+            this.currentBlob.style.transform = `translateX(${currentX}vw) translateY(-50%)`;
+        }
         
-        // Morphing based on movement
+        // Simplified morphing for mobile
         const inner = this.currentBlob.querySelector('.liquid-blob-inner');
-        if (inner) {
+        if (inner && !this.useSimpleAnimation) {
             const velocity = Math.abs(this.currentProgress - this.lastProgress);
             this.lastProgress = this.currentProgress;
             
             if (velocity > 0.001) {
-                const stretch = 1 + velocity * 10;
-                inner.style.transform = `scaleX(${Math.min(stretch, 1.2)}) scaleY(${Math.max(1 - velocity * 5, 0.9)})`;
+                const stretchFactor = this.isMobileDevice ? 3 : 10;
+                const squashFactor = this.isMobileDevice ? 1.5 : 5;
+                const stretch = 1 + velocity * stretchFactor;
+                inner.style.transform = `scale(${Math.min(stretch, 1.1)}, ${Math.max(1 - velocity * squashFactor, 0.95)})`;
             } else {
                 inner.style.transform = 'scale(1)';
             }
@@ -236,12 +265,29 @@ class LiquidMorphController {
         if (this.birthBlob) this.birthBlob.style.display = 'none';
         if (this.dropConnector) this.dropConnector.style.display = 'none';
     }
-    
-    swapBlobs() {
-        // Not needed with single blob approach
-        this.isAnimating = false;
-    }
 }
+
+// Additional mobile-specific fixes
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevent overscroll bounce on iOS
+    if (isMobile()) {
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.contact-form')) return; // Allow form scrolling
+            
+            const scrollable = e.target.closest('.content-page');
+            if (scrollable && scrollable.scrollHeight > scrollable.clientHeight) {
+                return;
+            }
+        }, { passive: true });
+        
+        // Fix for iOS momentum scrolling
+        const contentPage = document.querySelector('.content-page');
+        if (contentPage) {
+            contentPage.style.webkitOverflowScrolling = 'touch';
+            contentPage.style.overflowY = 'auto';
+        }
+    }
+});
 
 // Initialize liquid morph controller
 const liquidMorph = new LiquidMorphController();
@@ -294,8 +340,11 @@ function initScrollEffects() {
     let ticking = false;
     
     function updateScrollEffects() {
-        const scrollY = window.pageYOffset;
+        const scrollY = window.scrollY;
         const windowHeight = window.innerHeight;
+
+        const rotationMultiplier = isMobile() ? 5 : 8;
+        const depthMultiplier = isMobile() ? -30 : -50;
         
         // Disable 3D effects on hero section to prevent conflicts
         sections.forEach((section, index) => {
@@ -312,17 +361,22 @@ function initScrollEffects() {
             const normalizedDistance = distanceFromCenter / windowHeight;
             
             // Gentler 3D rotation effect
-            const rotateX = normalizedDistance * 8; // Reduced from 15
-            const translateZ = Math.abs(normalizedDistance) * -50; // Reduced from -100
+            const rotateX = normalizedDistance * rotationMultiplier;
+            const translateZ = Math.abs(normalizedDistance) * depthMultiplier;
             
-            section.style.transform = `perspective(1000px) rotateX(${rotateX}deg) translateZ(${translateZ}px)`;
+            if (isMobile()) {
+                section.style.transform = `translateY(${translateZ / 2}px)`;
+            } else {
+                section.style.transform = `perspective(1000px) rotateX(${rotateX}deg) translateZ(${translateZ}px)`;
+            }
         });
         
         // Hero fade out with better performance
         if (heroContent) {
             const heroOpacity = Math.max(0, 1 - scrollY / (windowHeight * 0.8));
             heroContent.style.opacity = heroOpacity;
-            heroContent.style.transform = `translateY(${scrollY * 0.3}px)`;
+            const parallaxMultiplier = isMobile() ? 0.2 : 0.3;
+            heroContent.style.transform = `translateY(${scrollY * parallaxMultiplier}px)`;
         }
         
         ticking = false;
@@ -337,11 +391,49 @@ function initScrollEffects() {
     }, { passive: true });
 }
 
+// touch event handling for mobile
+function initMobileTouchHandlers() {
+    if (!isMobile()) return;
+
+    // smooth scrolling for touch devices
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    document.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+        touchEndY = e.changedTouches[0].clientY;
+        // add momentum scrolling hint
+        const swipeDistance = touchStartY - touchEndY;
+        if (Math.abs(swipeDistance) > 50) {
+            document.body.style.webkitOverflowScrolling = 'touch';
+        }
+    }, { passive: true });
+
+    // handle orientation changes
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            window.scrollTo(0, window.scrollY);
+            liquidMorph.windowWidth = window.innerWidth;
+            liquidMorph.windowHeight = window.innerHeight;
+            liquidMorph.isMobileDevice = isMobile();
+        }, 300);
+    });
+}
+
+setTimeout(() => {
+    initMobileTouchHandlers();
+}, 50);
+
 // Intersection Observer for fade-in animations
 function initObservers() {
+    const isMobileDevice = isMobile();
+
     const observerOptions = {
-        threshold: 0.2,
-        rootMargin: '0px 0px -100px 0px'
+        threshold: isMobileDevice ? 0.1 : 0.2,
+        rootMargin: isMobileDevice ? '0px 0px -50px 0px' : '0px 0px -100px 0px'
     };
     
     const observer = new IntersectionObserver((entries) => {
@@ -355,7 +447,7 @@ function initObservers() {
                     infoItems.forEach((item, index) => {
                         setTimeout(() => {
                             item.classList.add('visible');
-                        }, index * 100);
+                        }, isMobileDevice ? index * 150 : index * 100);
                     });
                 }
             } else {
