@@ -2052,8 +2052,11 @@ section {
     /* Improve scrolling performance */
     * {
         -webkit-transform: translateZ(0);
+        transform: translateZ(0);
         -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
         -webkit-perspective: 1000;
+        perspective: 1000;
     }
     
     /* Disable hover effects on touch devices */
